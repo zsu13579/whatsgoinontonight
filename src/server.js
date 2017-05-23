@@ -32,6 +32,7 @@ import assets from './assets.json'; // eslint-disable-line import/no-unresolved
 import configureStore from './store/configureStore';
 import { setRuntimeVariable } from './actions/runtime';
 import { port, auth } from './config';
+import { User, UserLogin, UserClaim, UserProfile, Wins } from './data/models';
 
 const app = express();
 
@@ -75,6 +76,73 @@ app.get('/login/facebook/return',
     res.redirect('/');
   },
 );
+app.post('/login', 
+  passport.authenticate('local', { failureRedirect: '/login' }),
+  (req, res) => {
+  const expiresIn = 60 * 60 * 24 * 180; // 180 days
+    const token = jwt.sign(req.user, config.auth.jwt.secret, { expiresIn });
+    res.cookie('id_token', token, { maxAge: 1000 * expiresIn, httpOnly: true });  
+    res.redirect('/');
+  });
+app.get('/logout',
+  (req, res) => {
+  // console.log('clearcookielog at server.js');
+    res.clearCookie('id_token');
+    res.redirect('/');
+  },
+);
+app.post('/register',
+  (req, res, done) => {
+  const username=req.body.username;
+  const password=req.body.password;
+  const fooBar = async () => {
+    // User.drop();
+    let user = await User.create({
+    email: username,
+    password: password,
+    emailConfirmed: false,
+    logins: [
+      { name: username, key: username+"001" },
+    ],
+    claims: [
+      { type: 'claimType', value: 'accessToken' },
+    ],
+    profile: {
+      displayName: username,
+    },
+    }, {
+    include: [
+      { model: UserLogin, as: 'logins' },
+      { model: UserClaim, as: 'claims' },
+      { model: UserProfile, as: 'profile' },
+    ],
+    });
+    done(null, {
+    id: user.id,
+    email: user.email,
+    }); 
+  }
+  fooBar().catch(done); 
+    res.redirect('/login');
+  });
+
+app.post('/mybooks',
+  (req, res, done) => {
+  const title = req.body.title;
+  const id = `${Date.now()}::${Math.ceil(Math.random() * 99999999)}`;
+  const fooBar = async () => {
+    // User.drop();
+    let book = await Book.create({
+    title: title,id:id,owner:req.user.email,isBorrowed:0,
+    });
+    done(null, {
+    title: title,
+    }); 
+  }
+  fooBar().catch(done); 
+    res.redirect('/mybooks');
+  });  
+
 
 //
 // Register API middleware

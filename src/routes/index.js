@@ -17,10 +17,11 @@ export default {
   // Keep in mind, routes are evaluated in order
   children: [
     require('./home').default,
-    require('./contact').default,
+    require('./recentwins').default,
     require('./login').default,
     require('./register').default,
-    require('./about').default,
+    require('./yourwins').default,
+    require('./profile').default,
     require('./privacy').default,
     require('./admin').default,
 
