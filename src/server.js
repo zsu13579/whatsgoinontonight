@@ -80,7 +80,7 @@ app.post('/login',
   passport.authenticate('local', { failureRedirect: '/login' }),
   (req, res) => {
   const expiresIn = 60 * 60 * 24 * 180; // 180 days
-    const token = jwt.sign(req.user, config.auth.jwt.secret, { expiresIn });
+    const token = jwt.sign(req.user, auth.jwt.secret, { expiresIn });
     res.cookie('id_token', token, { maxAge: 1000 * expiresIn, httpOnly: true });  
     res.redirect('/');
   });
@@ -119,28 +119,29 @@ app.post('/register',
     });
     done(null, {
     id: user.id,
-    email: user.email,
+    username: user.email,
     }); 
   }
   fooBar().catch(done); 
     res.redirect('/login');
   });
 
-app.post('/mybooks',
+app.post('/yourwins',
   (req, res, done) => {
   const title = req.body.title;
+  const img = req.body.img;
   const id = `${Date.now()}::${Math.ceil(Math.random() * 99999999)}`;
   const fooBar = async () => {
     // User.drop();
-    let book = await Book.create({
-    title: title,id:id,owner:req.user.email,isBorrowed:0,
+    let book = await Wins.create({
+    title: title,id:id,owner:req.user.email,img:img,like:0,notlike:0,
     });
     done(null, {
     title: title,
     }); 
   }
   fooBar().catch(done); 
-    res.redirect('/mybooks');
+    res.redirect('/yourwins');
   });  
 
 

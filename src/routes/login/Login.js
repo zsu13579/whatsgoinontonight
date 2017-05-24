@@ -87,14 +87,14 @@ class Login extends React.Component {
           <strong className={s.lineThrough}>OR</strong>
           <form method="post">
             <div className={s.formGroup}>
-              <label className={s.label} htmlFor="usernameOrEmail">
+              <label className={s.label} htmlFor="username">
                 Username or email address:
               </label>
               <input
                 className={s.input}
-                id="usernameOrEmail"
+                id="username"
                 type="text"
-                name="usernameOrEmail"
+                name="username"
                 autoFocus
               />
             </div>

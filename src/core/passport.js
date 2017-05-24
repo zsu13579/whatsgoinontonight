@@ -14,9 +14,54 @@
  */
 
 import passport from 'passport';
+import { Strategy as LocalStrategy } from 'passport-local';
 import { Strategy as FacebookStrategy } from 'passport-facebook';
 import { User, UserLogin, UserClaim, UserProfile } from '../data/models';
 import { auth as config } from '../config';
+import db from '../data/db'
+
+
+/**
+ * Sign in with local.
+ */
+// Configure the local strategy for use by Passport.
+//
+// The local strategy require a `verify` function which receives the credentials
+// (`username` and `password`) submitted by the user.  The function must verify
+// that the password is correct and then invoke `cb` with a user object, which
+// will be set at `req.user` in route handlers after authentication.
+passport.use(new LocalStrategy(
+  
+  function(username, password, cb) {
+	User.findOne({ where: { email: username } }).then(function(user){
+	
+    let userjson = JSON.parse(JSON.stringify(user));
+  	if (!userjson) { return cb(null, false); }
+  	if (userjson.password != password) { return cb(null, false); }
+  	return cb(null, userjson);
+  	});
+	
+  }));
+
+
+// Configure Passport authenticated session persistence.
+//
+// In order to restore authentication state across HTTP requests, Passport needs
+// to serialize users into and deserialize users out of the session.  The
+// typical implementation of this is as simple as supplying the user ID when
+// serializing, and querying the user record by ID from the database when
+// deserializing.
+passport.serializeUser(function(user, cb) {
+  cb(null, user.id);
+});
+
+passport.deserializeUser(function(key, cb) {
+  User.findOne({ id: id }, function (err, user) {
+    if (err) { return cb(err); }
+    cb(null, user);
+  });
+});
+
 
 /**
  * Sign in with Facebook.

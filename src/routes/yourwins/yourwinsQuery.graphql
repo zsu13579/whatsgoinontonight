@@ -1,0 +1,10 @@
+{
+  wins {
+	id
+    title
+    owner
+    like
+	notlike
+	img
+  }
+}

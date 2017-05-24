@@ -30,7 +30,13 @@ async function copy() {
     }, null, 2)),
     copyFile('LICENSE.txt', 'build/LICENSE.txt'),
     copyDir('public', 'build/public'),
+	copyDir('node_modules/bootstrap/dist/css', 'build/public/css'),
+    copyDir('node_modules/bootstrap/dist/fonts', 'build/public/fonts'),
   ]);
+  await copyFile('node_modules/font-awesome/css/font-awesome.min.css', 'build/public/css/font-awesome.min.css');
+  await copyFile('node_modules/font-awesome/fonts/fontawesome-webfont.woff', 'build/public/fonts/fontawesome-webfont.woff');
+  await copyFile('node_modules/font-awesome/fonts/fontawesome-webfont.woff2', 'build/public/fonts/fontawesome-webfont.woff2');	
+  
 
   if (process.argv.includes('--watch')) {
     const watcher = chokidar.watch([

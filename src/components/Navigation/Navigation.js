@@ -12,6 +12,7 @@ import cx from 'classnames';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import s from './Navigation.css';
 import Link from '../Link';
+import { connect } from 'react-redux';
 
 class Navigation extends React.Component {
   render() {
@@ -34,4 +35,10 @@ class Navigation extends React.Component {
   }
 }
 
-export default withStyles(s)(Navigation);
+function mapStateToProps(state) {
+  return {
+    username: state.user.email
+  }
+}
+
+export default connect(mapStateToProps)(withStyles(s)(Navigation));
