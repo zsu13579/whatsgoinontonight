@@ -13,6 +13,8 @@ import { graphql, compose } from 'react-apollo';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import recentwinsQuery from './recentwinsQuery.graphql';
 import s from './Recentwins.css';
+import {Image} from 'react-bootstrap';
+import Masonry from 'react-masonry-component';
 
 class Recentwins extends React.Component {
 
@@ -38,11 +40,16 @@ class Recentwins extends React.Component {
 	  <div className={s.root}>
         <div className={s.container}>
           <h1>Recent Wins</h1>
-          {this.state.wins.map(item => (
-            <article className={s.newsItem}>
-              <h1 className={s.newsTitle}><a href={item.img}>{item.title}</a></h1>              
-            </article>
+          
+		  <Masonry className={s.mason} >  
+		  {this.state.wins.map(item => (
+			<span className={s.myGallery}>
+				<Image src={item.img} responsive rounded />		  
+				<h5 className={s.title}><a href={item.img}>{item.title}</a></h5>  
+			</span>			
           ))}
+		  </Masonry>
+		  
         </div>
       </div>
     );

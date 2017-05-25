@@ -13,8 +13,10 @@ import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import s from './Yourwins.css';
 import { graphql, compose } from 'react-apollo';
 import yourwinsQuery from './yourwinsQuery.graphql';
+import yourwinsMutation from './yourwinsMutation.graphql';
 import { Alert,Button,Panel,Accordion,Modal,FormGroup,FormControl,ControlLabel,HelpBlock,InputGroup,Image,Glyphicon,DropdownButton,MenuItem } from 'react-bootstrap';
 import { connect } from 'react-redux';
+import Masonry from 'react-masonry-component';
 // import { reqForMyBooks, confirmReqForMyBooks } from '../../actions/book';
 
 class Yourwins extends React.Component {
@@ -22,7 +24,7 @@ class Yourwins extends React.Component {
   constructor(...args) {
 	super(...args);
 	const { wins } = this.props.data;
-    this.state = { wins: wins, showModal: false, imgurl: null };
+    this.state = { wins: wins, showModal: false, imgurl: null, };
   };
 
   static propTypes = {
@@ -35,32 +37,44 @@ class Yourwins extends React.Component {
 		notlike: PropTypes.string,
 	  })).isRequired,
   };
-    
+  
+  handleAddWin = (e) => {
+	let title = this.titleipt.value;
+	let url = this.urlipt.value;
+	let owner = this.props.username;
+	this.props.mutate({variables: {title:title, url:url, owner: owner}}).then((out) =>	
+	{
+	this.setState({ showModal: false, wins:out.data.addwin });
+	})
+  };
+       
   render() {
+	  
     let open = () => this.setState({ showModal: true});
     let close = () => this.setState({ showModal: false});
     let handleChange = (e) => this.setState({ imgurl: e.target.value });
-    let addWin = () => {};
 
     const formInstance = (
       <form>
         <FormGroup
-          controlId="formBasicText"
+          controlId="title"
         >
           <ControlLabel>Title</ControlLabel>
           <FormControl
             type="text"
             placeholder="Enter title"
+			inputRef= { ref => { this.titleipt = ref; }}
           />
         </FormGroup>
         <FormGroup
-          controlId="formBasicText"
+          controlId="url"
         >
           <ControlLabel>Image Url</ControlLabel>
           <FormControl
             type="text"
             placeholder="Enter image url"
             onChange={handleChange}
+			inputRef= { ref => { this.urlipt = ref; }}
           />
         </FormGroup>
       </form>
@@ -71,11 +85,16 @@ class Yourwins extends React.Component {
         <div className={s.container}>
           <h1>Your Wins</h1>
           <Button bsStyle="primary" bsSize="large" onClick={open}>Add a Win</Button>  
-          {this.state.wins.map(item => (
-            <article className={s.newsItem}>
-              <h1 className={s.newsTitle}><a href={item.img}>{item.title}</a></h1>              
-            </article>
+          
+		  <Masonry className={s.mason} >  
+		  {this.state.wins.map(item => (
+			<span className={s.myGallery}>
+				<Image src={item.img} responsive rounded />		  
+				<h5 className={s.title}><a href={item.img}>{item.title}</a></h5>  
+			</span>			
           ))}
+		  </Masonry>
+		  
           <Modal
             show={this.state.showModal}
             onHide={close}
@@ -90,7 +109,7 @@ class Yourwins extends React.Component {
               { formInstance }
             </Modal.Body>
             <Modal.Footer>
-              <Button bsStyle="primary" onClick={addWin}>Submit</Button>
+              <Button bsStyle="primary" onClick={this.handleAddWin}>Submit</Button>
               <Button onClick={close}>Close</Button>
             </Modal.Footer>
           </Modal>
@@ -100,12 +119,19 @@ class Yourwins extends React.Component {
   }
 }
 
+function mapStateToProps(state) {
+  return {
+    username: state.user.email
+  }
+}
+
 const mapDispatch = () => {
   
 }
 export default compose(
   withStyles(s),
+  connect(mapStateToProps),
   graphql(yourwinsQuery),
-  connect(false,mapDispatch),
+  graphql(yourwinsMutation),
 )(Yourwins);
 

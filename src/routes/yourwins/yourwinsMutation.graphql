@@ -1,0 +1,9 @@
+mutation addwin($title: String!,$owner: String!, $url: String!){
+  addwin (
+    title: $title,
+    owner: $owner,
+    like: "0",
+	notlike: "0",
+	img: $url,
+  ){id,title,owner,like,notlike,img}
+}
