@@ -20,11 +20,12 @@ class Recentwins extends React.Component {
 
   constructor(...args) {
 	super(...args);
-	const { wins } = this.props.data;
-    this.state = {wins: wins};
+    this.state = {wins: this.props.data.wins, loading:this.props.data.loading};
   }		
   
   static propTypes = {
+  	data: PropTypes.shape({
+  	  loading: PropTypes.bool,	
 	  wins: PropTypes.arrayOf(PropTypes.shape({
 		id: PropTypes.string.isRequired,
 		title: PropTypes.string.isRequired,
@@ -33,9 +34,20 @@ class Recentwins extends React.Component {
 		like: PropTypes.string,
 		notlike: PropTypes.string,
 	  })).isRequired,
+	}).isRequired
   };
     
   render() {
+
+  	if (this.state.loading) {
+	  return (<div>Loading</div>)
+	}
+
+	if (this.props.data.error) {
+	  console.log(this.props.data.error)
+      return (<div>An unexpected error occurred</div>)
+	}
+
     return (
 	  <div className={s.root}>
         <div className={s.container}>

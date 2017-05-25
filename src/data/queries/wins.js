@@ -29,8 +29,9 @@ const wins = {
     notlike: { type: StringType },
     title: { type: StringType },
   },
-  resolve(root,args) { 
-    return Wins.findAll({where: args});
+  async resolve(root,args) { 
+    const result= await Wins.findAll({where: args});
+    return result;
   },
 };
 

@@ -36,9 +36,12 @@ class Navigation extends React.Component {
 }
 
 function mapStateToProps(state) {
-  return {
-    username: state.user.email
+  if(state.user){
+    return {
+      username: state.user.email
+    }
   }
 }
+
 
 export default connect(mapStateToProps)(withStyles(s)(Navigation));

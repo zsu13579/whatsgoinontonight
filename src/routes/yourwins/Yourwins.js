@@ -22,21 +22,24 @@ import Masonry from 'react-masonry-component';
 class Yourwins extends React.Component {
 
   constructor(...args) {
-	super(...args);
-	const { wins } = this.props.data;
-    this.state = { wins: wins, showModal: false, imgurl: null, };
+	  super(...args);
+    this.state = { wins: this.props.data.wins, showModal: false, imgurl: null, loading: this.props.data.loading};
   };
 
   static propTypes = {
-	  wins: PropTypes.arrayOf(PropTypes.shape({
-		id: PropTypes.string.isRequired,
-		title: PropTypes.string.isRequired,
-		owner: PropTypes.string.isRequired,
-		img: PropTypes.string,
-		like: PropTypes.string,
-		notlike: PropTypes.string,
-	  })).isRequired,
+    data: PropTypes.shape({
+      loading: PropTypes.bool,  
+      wins: PropTypes.arrayOf(PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      title: PropTypes.string.isRequired,
+      owner: PropTypes.string.isRequired,
+      img: PropTypes.string,
+      like: PropTypes.string,
+      notlike: PropTypes.string,
+      })).isRequired,
+    }).isRequired
   };
+    
   
   handleAddWin = (e) => {
 	let title = this.titleipt.value;
@@ -50,6 +53,15 @@ class Yourwins extends React.Component {
        
   render() {
 	  
+    if (this.state.loading) {
+      return (<div>Loading</div>)
+    }
+
+    if (this.props.data.error) {
+      console.log(this.props.data.error)
+        return (<div>An unexpected error occurred</div>)
+    }
+
     let open = () => this.setState({ showModal: true});
     let close = () => this.setState({ showModal: false});
     let handleChange = (e) => this.setState({ imgurl: e.target.value });
@@ -120,18 +132,25 @@ class Yourwins extends React.Component {
 }
 
 function mapStateToProps(state) {
-  return {
-    username: state.user.email
+  if(state.user){
+    return {
+      username: state.user.email
+    }
   }
 }
 
 const mapDispatch = () => {
   
 }
+
+const options = (ownProps) => {
+  return {variables: {username: ownProps.username}}
+}
+
 export default compose(
   withStyles(s),
   connect(mapStateToProps),
-  graphql(yourwinsQuery),
+  graphql(yourwinsQuery, {options: options}),
   graphql(yourwinsMutation),
 )(Yourwins);
 
