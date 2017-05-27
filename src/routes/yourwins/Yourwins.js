@@ -17,27 +17,29 @@ import yourwinsMutation from './yourwinsMutation.graphql';
 import { Alert,Button,Panel,Accordion,Modal,FormGroup,FormControl,ControlLabel,HelpBlock,InputGroup,Image,Glyphicon,DropdownButton,MenuItem } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import Masonry from 'react-masonry-component';
+import update from 'immutability-helper';
+import recentwinsQuery from '../recentwins/recentwinsQuery.graphql';
+
 // import { reqForMyBooks, confirmReqForMyBooks } from '../../actions/book';
 
 class Yourwins extends React.Component {
 
   constructor(...args) {
-	  super(...args);
-    this.state = { wins: this.props.data.wins, showModal: false, imgurl: null, loading: this.props.data.loading};
+	super(...args);
+    this.state = { wins:this.props.wins, showModal: false, imgurl: null };
+	this.handleAddWin = this.handleAddWin.bind(this);
   };
 
   static propTypes = {
-    data: PropTypes.shape({
-      loading: PropTypes.bool,  
-      wins: PropTypes.arrayOf(PropTypes.shape({
-      id: PropTypes.string.isRequired,
-      title: PropTypes.string.isRequired,
-      owner: PropTypes.string.isRequired,
-      img: PropTypes.string,
-      like: PropTypes.string,
-      notlike: PropTypes.string,
-      })).isRequired,
-    }).isRequired
+	  loading: PropTypes.bool,  
+	  wins: PropTypes.arrayOf(PropTypes.shape({
+		  id: PropTypes.string.isRequired,
+		  title: PropTypes.string.isRequired,
+		  owner: PropTypes.string.isRequired,
+		  img: PropTypes.string,
+		  like: PropTypes.string,
+		  notlike: PropTypes.string,
+	  })).isRequired,
   };
     
   
@@ -45,20 +47,21 @@ class Yourwins extends React.Component {
 	let title = this.titleipt.value;
 	let url = this.urlipt.value;
 	let owner = this.props.username;
-	this.props.mutate({variables: {title:title, url:url, owner: owner}}).then((out) =>	
+	this.props.submit({title, url, owner}).then((out) =>	
 	{
-	this.setState({ showModal: false, wins:out.data.addwin });
+	// this.props.data.refetch();	
+	this.setState({ showModal: false, });
 	})
   };
        
   render() {
 	  
-    if (this.state.loading) {
+    if (this.props.loading) {
       return (<div>Loading</div>)
     }
 
-    if (this.props.data.error) {
-      console.log(this.props.data.error)
+    if (this.props.error) {
+      console.log(this.props.error)
         return (<div>An unexpected error occurred</div>)
     }
 
@@ -99,7 +102,7 @@ class Yourwins extends React.Component {
           <Button bsStyle="primary" bsSize="large" onClick={open}>Add a Win</Button>  
           
 		  <Masonry className={s.mason} >  
-		  {this.state.wins.map(item => (
+		  {this.props.wins.map(item => (
 			<span className={s.myGallery}>
 				<Image src={item.img} responsive rounded />		  
 				<h5 className={s.title}><a href={item.img}>{item.title}</a></h5>  
@@ -134,7 +137,7 @@ class Yourwins extends React.Component {
 function mapStateToProps(state) {
   if(state.user){
     return {
-      username: state.user.email
+      username: state.user.email,
     }
   }
 }
@@ -143,14 +146,60 @@ const mapDispatch = () => {
   
 }
 
+const withMutations = graphql(yourwinsMutation,{
+  props: ({ ownProps, mutate }) => ({
+    submit: ({ title, url, owner }) =>
+      mutate({
+        variables: { title, url, owner },
+        // optimisticResponse: {
+          // __typename: 'Mutation',
+          // wins: {
+            // __typename: 'Win',
+            // id: null,
+            // title: title,
+            // url: url,
+            // owner: owner,
+			// like: 0,
+			// notlike: 0,
+          // },
+        // },
+				
+        update: (store, { data: { addwin } }) => {
+			// Read the data from our cache for this query.
+			const data = store.readQuery({ query: yourwinsQuery, variables: { username:owner } });
+			// Add our comment from the mutation to the end.
+			data.wins.unshift(addwin);
+			// Write our data back to the cache.
+			store.writeQuery({ query: yourwinsQuery,variables: { username:owner }, data });
+			
+			// Read the data from our cache for all query.
+			const dataRecent = store.readQuery({ query: recentwinsQuery });
+			// Add our comment from the mutation to the end.
+			dataRecent.wins.unshift(addwin);
+			// Write our data back to the cache.
+			store.writeQuery({ query: recentwinsQuery, dataRecent });
+        },
+      }),
+  }),
+});
+
 const options = (ownProps) => {
   return {variables: {username: ownProps.username}}
 }
 
+const withData = graphql(yourwinsQuery, {
+  options: options,
+  props: ({ data: { loading, wins } }) => ({
+    loading, wins,
+  }),
+});
+
 export default compose(
   withStyles(s),
   connect(mapStateToProps),
-  graphql(yourwinsQuery, {options: options}),
-  graphql(yourwinsMutation),
+  withData,
+  withMutations,
 )(Yourwins);
+
+// export default connect(mapStateToProps)(withData(withMutations(withStyles(s)(Yourwins))));
 

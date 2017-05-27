@@ -20,7 +20,7 @@ class Recentwins extends React.Component {
 
   constructor(...args) {
 	super(...args);
-    this.state = {wins: this.props.data.wins, loading:this.props.data.loading};
+    // this.state = {wins: this.props.data.wins, loading:this.props.data.loading};
   }		
   
   static propTypes = {
@@ -39,7 +39,7 @@ class Recentwins extends React.Component {
     
   render() {
 
-  	if (this.state.loading) {
+  	if (this.props.data.loading) {
 	  return (<div>Loading</div>)
 	}
 
@@ -54,7 +54,7 @@ class Recentwins extends React.Component {
           <h1>Recent Wins</h1>
           
 		  <Masonry className={s.mason} >  
-		  {this.state.wins.map(item => (
+		  {this.props.data.wins.map(item => (
 			<span className={s.myGallery}>
 				<Image src={item.img} responsive rounded />		  
 				<h5 className={s.title}><a href={item.img}>{item.title}</a></h5>  

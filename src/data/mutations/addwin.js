@@ -17,7 +17,7 @@ import {
 } from 'graphql';
 
 const addwin = {
-  type: new List(WinsItemType),
+  type: WinsItemType,
   args: {
     title: { type: new NonNull(StringType) },
     owner: { type: new NonNull(StringType) },
@@ -28,7 +28,8 @@ const addwin = {
   resolve: async function(rootValue, args) {
 	let winVal = Object.assign({}, args);
 	await Wins.create(winVal);
-	return Wins.findAll({where: {owner: args.owner}});
+	const result = await Wins.findOne({where: {title: args.title}});
+	return result;
   }
 }
 
