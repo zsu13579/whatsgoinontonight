@@ -13,8 +13,9 @@ import { graphql, compose } from 'react-apollo';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import recentwinsQuery from './recentwinsQuery.graphql';
 import s from './Recentwins.css';
-import {Image} from 'react-bootstrap';
+import { Image } from 'react-bootstrap';
 import Masonry from 'react-masonry-component';
+import Win from '../../components/Win';
 
 class Recentwins extends React.Component {
 
@@ -24,27 +25,25 @@ class Recentwins extends React.Component {
   }		
   
   static propTypes = {
-  	data: PropTypes.shape({
   	  loading: PropTypes.bool,	
 	  wins: PropTypes.arrayOf(PropTypes.shape({
 		id: PropTypes.string.isRequired,
 		title: PropTypes.string.isRequired,
 		owner: PropTypes.string.isRequired,
 		img: PropTypes.string,
-		like: PropTypes.string,
-		notlike: PropTypes.string,
+		like: PropTypes.int,
+		notlike: PropTypes.int,
 	  })).isRequired,
-	}).isRequired
   };
     
   render() {
 
-  	if (this.props.data.loading) {
+  	if (this.props.loading) {
 	  return (<div>Loading</div>)
 	}
 
-	if (this.props.data.error) {
-	  console.log(this.props.data.error)
+	if (this.props.error) {
+	  console.log(this.props.error)
       return (<div>An unexpected error occurred</div>)
 	}
 
@@ -54,11 +53,16 @@ class Recentwins extends React.Component {
           <h1>Recent Wins</h1>
           
 		  <Masonry className={s.mason} >  
-		  {this.props.data.wins.map(item => (
-			<span className={s.myGallery}>
-				<Image src={item.img} responsive rounded />		  
-				<h5 className={s.title}><a href={item.img}>{item.title}</a></h5>  
-			</span>			
+		  {this.props.wins.map(item => (
+			<Win className={s.myGallery1} 
+				id = {item.id}
+				imgurl = {item.img}
+				title = {item.title}
+				owner = {item.owner}
+				like = {item.like}
+				notlike = {item.notlike}
+				key = {item.id} 
+			/>		
           ))}
 		  </Masonry>
 		  
@@ -68,7 +72,13 @@ class Recentwins extends React.Component {
   }
 }
 
+const withData = graphql(recentwinsQuery, {
+  props: ({ data: { loading, wins } }) => ({
+    loading, wins: wins || [],
+  }),
+});
+
 export default compose(
   withStyles(s),
-  graphql(recentwinsQuery),
+  withData,
 )(Recentwins);

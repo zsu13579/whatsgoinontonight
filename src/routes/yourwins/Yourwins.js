@@ -19,6 +19,7 @@ import { connect } from 'react-redux';
 import Masonry from 'react-masonry-component';
 import update from 'immutability-helper';
 import recentwinsQuery from '../recentwins/recentwinsQuery.graphql';
+import Win from '../../components/Win';
 
 // import { reqForMyBooks, confirmReqForMyBooks } from '../../actions/book';
 
@@ -27,7 +28,7 @@ class Yourwins extends React.Component {
   constructor(...args) {
 	super(...args);
     this.state = { wins:this.props.wins, showModal: false, imgurl: null };
-	this.handleAddWin = this.handleAddWin.bind(this);
+	  this.handleAddWin = this.handleAddWin.bind(this);
   };
 
   static propTypes = {
@@ -37,21 +38,21 @@ class Yourwins extends React.Component {
 		  title: PropTypes.string.isRequired,
 		  owner: PropTypes.string.isRequired,
 		  img: PropTypes.string,
-		  like: PropTypes.string,
-		  notlike: PropTypes.string,
+		  like: PropTypes.int,
+		  notlike: PropTypes.int,
 	  })).isRequired,
   };
     
   
   handleAddWin = (e) => {
-	let title = this.titleipt.value;
-	let url = this.urlipt.value;
-	let owner = this.props.username;
-	this.props.submit({title, url, owner}).then((out) =>	
-	{
-	// this.props.data.refetch();	
-	this.setState({ showModal: false, });
-	})
+  	let title = this.titleipt.value;
+  	let url = this.urlipt.value;
+  	let owner = this.props.username;
+  	this.props.submit({title, url, owner}).then((out) =>	
+  	{
+  	// this.props.data.refetch();	
+  	this.setState({ showModal: false, });
+  	})
   };
        
   render() {
@@ -89,7 +90,7 @@ class Yourwins extends React.Component {
             type="text"
             placeholder="Enter image url"
             onChange={handleChange}
-			inputRef= { ref => { this.urlipt = ref; }}
+			      inputRef= { ref => { this.urlipt = ref; }}
           />
         </FormGroup>
       </form>
@@ -101,14 +102,19 @@ class Yourwins extends React.Component {
           <h1>Your Wins</h1>
           <Button bsStyle="primary" bsSize="large" onClick={open}>Add a Win</Button>  
           
-		  <Masonry className={s.mason} >  
-		  {this.props.wins.map(item => (
-			<span className={s.myGallery}>
-				<Image src={item.img} responsive rounded />		  
-				<h5 className={s.title}><a href={item.img}>{item.title}</a></h5>  
-			</span>			
-          ))}
-		  </Masonry>
+    		  <Masonry className={s.mason} >  
+      		  {this.props.wins.map(item => (
+      			<Win className={s.myGallery1} 
+                id = {item.id}
+                imgurl = {item.img}
+                title = {item.title}
+                owner = {item.owner}
+                like = {item.like}
+                notlike = {item.notlike}
+                key = {item.id} 
+            />  
+            ))}
+    		  </Masonry>
 		  
           <Modal
             show={this.state.showModal}
@@ -140,6 +146,7 @@ function mapStateToProps(state) {
       username: state.user.email,
     }
   }
+  return {}
 }
 
 const mapDispatch = () => {
@@ -165,23 +172,21 @@ const withMutations = graphql(yourwinsMutation,{
         // },
 				
         update: (store, { data: { addwin } }) => {
-			// Read the data from our cache for this query.
-			const data = store.readQuery({ query: yourwinsQuery, variables: { username:owner } });
-			// Add our comment from the mutation to the end.
-			data.wins.unshift(addwin);
-			// Write our data back to the cache.
-			store.writeQuery({ query: yourwinsQuery,variables: { username:owner }, data });
-			
-			// Read the data from our cache for all query.
-			const dataRecent = store.readQuery({ query: recentwinsQuery });
-			// Add our comment from the mutation to the end.
-			dataRecent.wins.unshift(addwin);
-			// Write our data back to the cache.
-			store.writeQuery({ query: recentwinsQuery, dataRecent });
+  			// Read the data from our cache for this query.
+  			const data = store.readQuery({ query: yourwinsQuery, variables: { username:owner } });
+  			// Add our comment from the mutation to the end.
+  			data.wins.unshift(addwin); 			
+        // Write our data back to the cache.
+        store.writeQuery({ query: yourwinsQuery,variables: { username:owner }, data });
+  			
         },
+        refetchQueries: [{
+          query: recentwinsQuery,
+        }],
       }),
   }),
 });
+
 
 const options = (ownProps) => {
   return {variables: {username: ownProps.username}}
@@ -190,7 +195,7 @@ const options = (ownProps) => {
 const withData = graphql(yourwinsQuery, {
   options: options,
   props: ({ data: { loading, wins } }) => ({
-    loading, wins,
+    loading, wins: wins || [],
   }),
 });
 
@@ -201,5 +206,4 @@ export default compose(
   withMutations,
 )(Yourwins);
 
-// export default connect(mapStateToProps)(withData(withMutations(withStyles(s)(Yourwins))));
 

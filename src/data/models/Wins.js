@@ -28,11 +28,11 @@ const Wins = Model.define('Wins', {
     type: DataType.STRING(255),
   },
   like: {
-    type: DataType.STRING(255),
+    type: DataType.INTEGER,
   },
 
   notlike: {
-    type: DataType.STRING(255),
+    type: DataType.INTEGER,
   },
 
 }, {

@@ -1,0 +1,6 @@
+{
+  "name": "Win",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./Win.js"
+}

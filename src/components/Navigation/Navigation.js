@@ -41,6 +41,7 @@ function mapStateToProps(state) {
       username: state.user.email
     }
   }
+  return {}
 }
 
 

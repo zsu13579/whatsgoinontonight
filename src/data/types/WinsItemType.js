@@ -10,6 +10,7 @@
 import {
   GraphQLObjectType as ObjectType,
   GraphQLString as StringType,
+  GraphQLInt as IntType,
   GraphQLNonNull as NonNull,
 } from 'graphql';
 
@@ -20,8 +21,8 @@ const WinsItemType = new ObjectType({
     title: { type: new NonNull(StringType) },
     owner: { type: new NonNull(StringType) },
     img: { type: StringType },
-    like: { type: StringType },
-    notlike: { type: StringType },
+    like: { type: IntType },
+    notlike: { type: IntType },
   },
 });
 

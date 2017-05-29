@@ -16,13 +16,13 @@ import me from './queries/me';
 import news from './queries/news';
 import wins from './queries/wins';
 import addwin from './mutations/addwin';
-import updatewin from './mutations/updatewin';
+import addlike from './mutations/addlike';
 
 const Mutation = new ObjectType({
   name: 'Mutation',
   fields: {
     addwin: addwin,
-	updatewin: updatewin,
+	  addlike: addlike,
   }
 });
 

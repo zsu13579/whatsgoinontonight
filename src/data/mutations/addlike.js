@@ -7,9 +7,8 @@
  * LICENSE.txt file in the root directory of this source tree.
  */
 
-import { GraphQLList as List } from 'graphql';
-import WinsItemType from '../types/WinsItemType';
 import { Wins } from '../models';
+// import WinsItemType from '../types/WinsItemType';
 import {
   GraphQLObjectType as ObjectType,
   GraphQLString as StringType,
@@ -17,21 +16,18 @@ import {
   GraphQLNonNull as NonNull,
 } from 'graphql';
 
-const addwin = {
-  type: WinsItemType,
+const addlike = {
+  type: StringType,
   args: {
-    title: { type: new NonNull(StringType) },
-    owner: { type: new NonNull(StringType) },
-    img: { type: StringType },
-    like: { type: IntType },
-    notlike: { type: IntType },
+    id: { type: new NonNull(StringType) },
+    addtype: { type: StringType },
   },
   resolve: async function(rootValue, args) {
-	let winVal = Object.assign({}, args);
-	await Wins.create(winVal);
-	const result = await Wins.findOne({where: {title: args.title}});
-	return result;
+	// let winVal = Object.assign({}, args);
+  let targetWin = await Wins.findOne({where: {id: args.id}});
+  let like = args.addtype=="LIKE_TYPE" ? { like: parseInt(targetWin.like) + 1} : { notlike: parseInt(targetWin.notlike) + 1};
+	return Wins.update(like,{where: {id: args.id}});
   }
 }
 
-export default addwin;
+export default addlike;

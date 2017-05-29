@@ -15,6 +15,11 @@ import newsQuery from './news.graphql';
 import s from './Home.css';
 
 class Home extends React.Component {
+
+  constructor(...args) {
+    super(...args);
+  };
+
   static propTypes = {
     data: PropTypes.shape({
       loading: PropTypes.bool.isRequired,

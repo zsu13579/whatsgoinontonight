@@ -15,6 +15,7 @@ import { Wins } from '../models';
 import {
   GraphQLObjectType as ObjectType,
   GraphQLString as StringType,
+  GraphQLInt as IntType,
   GraphQLNonNull as NonNull,
 } from 'graphql';
 
@@ -25,8 +26,8 @@ const wins = {
     id: { type: StringType },
     owner: { type: StringType },
     img: { type: StringType },
-    like: { type: StringType },
-    notlike: { type: StringType },
+    like: { type: IntType },
+    notlike: { type: IntType },
     title: { type: StringType },
   },
   async resolve(root,args) { 

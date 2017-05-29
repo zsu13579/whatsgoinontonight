@@ -1,10 +1,6 @@
+#import "./WinFragment.graphql"
 query ($username: String){
   wins(owner:$username) {
-	id
-    title
-    owner
-    like
-	notlike
-	img
+	...WinInfo
   }
-}
+}	
