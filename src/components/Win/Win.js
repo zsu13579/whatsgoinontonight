@@ -12,10 +12,14 @@ import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import { graphql, compose } from 'react-apollo';
 import s from './Win.css';
 import Link from '../Link';
+import { connect } from 'react-redux';
 import { Image,Glyphicon } from 'react-bootstrap';
 import update from 'immutability-helper';
 import recentwinsQuery from '../../routes/recentwins/recentwinsQuery.graphql';
+import yourwinsQuery from '../../routes/yourwins/yourwinsQuery.graphql';
 import addLikeMutation from './addLikeMutation.graphql';
+import deleteWinMutation from './deleteWinMutation.graphql';
+import Img from 'react-image';
 
 class Win extends React.Component {
   constructor(...args){
@@ -34,21 +38,40 @@ class Win extends React.Component {
     this.props.addLike({id, addtype});
   }
 
+  deleteWin = (e) => {
+    let id = e.target.id;
+    this.props.deleteWin({ id });
+  }
+
   render() {
-    let { id, imgurl, title, owner, like, notlike } = this.props;
+    let { id , imgurl, title, owner, like, notlike, deleteFlag } = this.props;
     return (
       <div className={s.root}>
         <div className={s.container}>
     			<span className={s.myGallery} key={id} >
-    				<Image src={imgurl} responsive rounded />		  
+            <Img className={s.myImg} src={[
+                  imgurl,
+                  'default.png'
+                ]} /> 
     				<h5 className={s.title}><a href={imgurl}>{title}</a></h5>
-            <p>{owner}</p>
-            <i className="fa fa-heart-o" onClick={this.addLike} id={id}></i> {like}&nbsp;&nbsp;&nbsp;<i className="fa fa-refresh" onClick={this.addNotLike} id={id} > </i> {notlike} 
+            {this.props.username == owner ? <p>You</p> : <p>{owner}</p>}
+            {deleteFlag ? (<i><i className="fa fa-times" onClick={this.deleteWin} id={id}></i>&nbsp;&nbsp;</i>) : <i></i>}
+            <i className="fa fa-heart-o" onClick={this.addLike} id={id}></i> {like}&nbsp;&nbsp;&nbsp;
+            <i className="fa fa-refresh" onClick={this.addNotLike} id={id} > </i> {notlike} 
     			</span>			
         </div>
       </div>
     );
   }
+}
+
+function mapStateToProps(state) {
+  if(state.user){
+    return {
+      username: state.user.email,
+    }
+  }
+  return {}
 }
 
 const addLikeMutations = graphql(addLikeMutation,{
@@ -63,7 +86,26 @@ const addLikeMutations = graphql(addLikeMutation,{
   }),
 });
 
+const deleteWinMutations = graphql(deleteWinMutation,{
+  props: ({ ownProps, mutate }) => ({
+    deleteWin: ({ id }) =>
+      mutate({
+        variables: { id },
+        refetchQueries: [{
+          query: recentwinsQuery,
+          },
+          {
+          query: yourwinsQuery,
+          variables: { username: ownProps.username}
+          },
+        ],
+      }),
+  }),
+});
+
 export default compose(
   withStyles(s),
+  connect(mapStateToProps),
   addLikeMutations,
+  deleteWinMutations,
 )(Win);

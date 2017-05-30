@@ -108,10 +108,10 @@ class Yourwins extends React.Component {
                 id = {item.id}
                 imgurl = {item.img}
                 title = {item.title}
-                owner = {item.owner}
                 like = {item.like}
                 notlike = {item.notlike}
                 key = {item.id} 
+                deleteFlag = "1"
             />  
             ))}
     		  </Masonry>

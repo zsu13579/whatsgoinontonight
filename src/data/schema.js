@@ -16,6 +16,7 @@ import me from './queries/me';
 import news from './queries/news';
 import wins from './queries/wins';
 import addwin from './mutations/addwin';
+import deletewin from './mutations/deletewin';
 import addlike from './mutations/addlike';
 
 const Mutation = new ObjectType({
@@ -23,6 +24,7 @@ const Mutation = new ObjectType({
   fields: {
     addwin: addwin,
 	  addlike: addlike,
+    deletewin: deletewin,
   }
 });
 

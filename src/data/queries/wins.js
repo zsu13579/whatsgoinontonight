@@ -31,7 +31,7 @@ const wins = {
     title: { type: StringType },
   },
   async resolve(root,args) { 
-    const result= await Wins.findAll({where: args});
+    const result= await Wins.findAll({where: args, order: [['createdAt','DESC']]});
     return result;
   },
 };
