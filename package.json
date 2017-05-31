@@ -46,6 +46,7 @@
     "react-apollo": "^1.0.1",
     "react-bootstrap": "^0.31.0",
     "react-dom": "^15.5.3",
+    "react-fileupload": "^2.4.0",
     "react-image": "^1.0.1",
     "react-masonry-component": "^5.0.5",
     "react-redux": "^5.0.4",

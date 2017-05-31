@@ -11,6 +11,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import s from './Profile.css';
+import { graphql, compose } from 'react-apollo';
+import { connect } from 'react-redux';
+import { FormGroup, ControlLabel,HelpBlock,FormControl  } from 'react-bootstrap'
 
 class Profile extends React.Component {
   static propTypes = {
@@ -18,15 +21,48 @@ class Profile extends React.Component {
   };
 
   render() {
+
+    function FieldGroup({ id, label, help, ...props }) {
+      return (
+        <FormGroup controlId={id}>
+          <ControlLabel>{label}</ControlLabel>
+          <FormControl {...props} />
+          {help && <HelpBlock>{help}</HelpBlock>}
+        </FormGroup>
+      );
+    }
+
+    const formInstance = (
+        <form>
+          <FieldGroup
+            id="formControlsFile"
+            type="file"
+            label="File"
+            help="upload your avatar."
+          />
+        </form>
+        )
+
     return (
       <div className={s.root}>
         <div className={s.container}>
           <h1>{this.props.title}</h1>
-          <p>...</p>
+          {formInstance}
+          <p>{this.props.username}</p>
         </div>
       </div>
     );
   }
 }
 
-export default withStyles(s)(Profile);
+const mapStateToProps = (state) => {
+  if (state.user){
+    return {username: state.user.email}
+  }
+  return {}
+}
+
+export default compose(
+  withStyles(s),
+  connect(mapStateToProps),
+  )(Profile);
