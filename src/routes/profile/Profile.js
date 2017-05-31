@@ -13,14 +13,60 @@ import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import s from './Profile.css';
 import { graphql, compose } from 'react-apollo';
 import { connect } from 'react-redux';
-import { FormGroup, ControlLabel,HelpBlock,FormControl  } from 'react-bootstrap'
+import { FormGroup, Button, ControlLabel,HelpBlock,FormControl  } from 'react-bootstrap'
+import Upload from 'rc-upload';
 
 class Profile extends React.Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      imgAvatar: "/uploads/default.png",uploadReady:0
+    };
+  }
+
   static propTypes = {
     title: PropTypes.string.isRequired,
   };
 
+  handleUpload = (filename) =>{
+    console.log(filename);
+    if(this.state.uploadReady==1)
+    {
+      this.setState({imgAvatar: "/uploads/"+filename, uploadReady: 0});
+    }
+  }
+
   render() {
+
+    const uploaderProps = {
+      action: '/profile',
+      name: 'avatar',
+      multiple: true,
+      supportServerRender: true,
+
+      beforeUpload(file) {
+        console.log('beforeUpload', file.name);
+      },
+      onStart: (file) => {
+        console.log('onStart', file.name);
+        // this.refs.inner.abort(file);
+      },
+      onSuccess: (file) => {
+        console.log('onSuccess', file);
+        setTimeout(function(){this.handleUpload(file.filename);},2000)
+        
+      },
+      onProgress: (step, file) => {
+        console.log('onProgress', Math.round(step.percent), file.name);
+      },
+      onReady: () => {
+        this.setState({uploadReady : 1});
+      },
+      onError(err) {
+        console.log('onError', err);
+      },
+    };
 
     function FieldGroup({ id, label, help, ...props }) {
       return (
@@ -33,13 +79,15 @@ class Profile extends React.Component {
     }
 
     const formInstance = (
-        <form>
+        <form action="/profile" method="post" encType="multipart/form-data">
           <FieldGroup
             id="formControlsFile"
             type="file"
             label="File"
             help="upload your avatar."
+            name="avatar1"
           />
+          <Button type="submit">Submit</Button>
         </form>
         )
 
@@ -47,8 +95,12 @@ class Profile extends React.Component {
       <div className={s.root}>
         <div className={s.container}>
           <h1>{this.props.title}</h1>
+          <img src={this.state.imgAvatar} />
           {formInstance}
-          <p>{this.props.username}</p>
+          <div>
+            <Upload {...uploaderProps} ref="inner"><a>开始上传</a></Upload>
+          </div>
+          <p>{this.props.username}{this.state.imgAvatar}</p>
         </div>
       </div>
     );

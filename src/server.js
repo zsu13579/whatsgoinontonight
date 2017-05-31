@@ -33,6 +33,7 @@ import configureStore from './store/configureStore';
 import { setRuntimeVariable } from './actions/runtime';
 import { port, auth } from './config';
 import { User, UserLogin, UserClaim, UserProfile, Wins } from './data/models';
+import multer from 'multer';
 
 const app = express();
 
@@ -143,6 +144,15 @@ app.post('/yourwins',
   fooBar().catch(done); 
     res.redirect('/yourwins');
   });  
+
+const upload = multer({ dest: 'public/uploads/' });
+app.post('/profile', upload.single('avatar'), function (req, res, next) {
+  // req.file is the `avatar` file
+  // req.body will hold the text fields, if there were any
+  const filename=req.file.filename
+  const result={"filename":filename}
+  res.end(JSON.stringify(result)) 
+})
 
 
 //
