@@ -15,9 +15,11 @@ import {
 import me from './queries/me';
 import news from './queries/news';
 import wins from './queries/wins';
+import profile from './queries/profile';
 import addwin from './mutations/addwin';
 import deletewin from './mutations/deletewin';
 import addlike from './mutations/addlike';
+import uploadAvatar from './mutations/uploadAvatar';
 
 const Mutation = new ObjectType({
   name: 'Mutation',
@@ -25,6 +27,7 @@ const Mutation = new ObjectType({
     addwin: addwin,
 	  addlike: addlike,
     deletewin: deletewin,
+    uploadAvatar: uploadAvatar,
   }
 });
 
@@ -34,7 +37,8 @@ const schema = new Schema({
     fields: {
       me,
       news,
-	  wins,
+	    wins,
+      profile,
     },
   }),
   mutation: Mutation,

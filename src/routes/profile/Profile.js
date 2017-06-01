@@ -16,15 +16,16 @@ import { connect } from 'react-redux';
 import FileUpload from 'react-fileupload';
 import { FormGroup, Button,ControlLabel,HelpBlock,FormControl  } from 'react-bootstrap'
 import Upload from 'rc-upload';
+import profileQuery from './profileQuery.graphql';
+import profileMutation from './profileMutation.graphql';
 
 class Profile extends React.Component {
 
   constructor(props) {
     super(props);
     this.state = {
-      imgAvatar: "default.png"
     };
-	this.handleUpload = this.handleUpload.bind(this)
+	   this.handleUpload = this.handleUpload.bind(this);
   }
 
   static propTypes = {
@@ -32,8 +33,9 @@ class Profile extends React.Component {
   };
 
   handleUpload = (filename) =>{
-    console.log(filename);
-    this.setState({imgAvatar: filename });
+    let displayName = this.props.username;
+    let picture = filename;
+    this.props.uploadAvatar({displayName, picture});
   }
 
   render() {
@@ -44,7 +46,7 @@ class Profile extends React.Component {
       multiple: true,
       supportServerRender: true,
       onSuccess: (file) => {
-		this.handleUpload(file.filename)        
+		    this.handleUpload(file.filename)        
       },
     };
 	
@@ -52,8 +54,9 @@ class Profile extends React.Component {
       <div className={s.root}>
         <div className={s.container}>
           <h1>{this.props.title} <Upload {...uploaderProps} ref="inner" className={s.avatarEdit} ><a>更新头像</a></Upload></h1>
-          <img src={this.state.imgAvatar} />
+          {this.props.profile.picture ? <img src={this.props.profile.picture} /> : <img src="default.png" /> }
           <h3>User : {this.props.username}</h3>
+
         </div>
       </div>
     );
@@ -69,21 +72,21 @@ const mapStateToProps = (state) => {
 
 const withData = graphql(profileQuery,{
 	options: (ownProps) => ({ variables: { username: ownProps.username } }),
-	props: ({data: { loading, profile }}) => ({ loading, profile || { imgAvatar: 'default.png' } )
+	props: ({data: { loading, profile }}) => ({ loading, profile , })
 })
 
 const withMutations = graphql(profileMutation,{
 	props: ({ ownProps,mutate }) => ({
-		uploadAvatar: ({ owner, imgAvatar }) => 
+		uploadAvatar: ({ displayName, picture }) => 
 			mutate({
-				variables: { owner, imgAvatar },
+				variables: { displayName, picture },
 				update: ( store, { data: profile}) => {
 					// Read the data from our cache for this query.
-					const data = store.readQuery({ query: profileQuery, variables: { username:owner } });
+					const data = store.readQuery({ query: profileQuery, variables: { username:displayName } });
 					// Add our comment from the mutation to the end.
-					data.profile.imgAvatar = imgAvatar; 			
+					data.profile.picture = picture; 			
 					// Write our data back to the cache.
-					store.writeQuery({ query: profileQuery,variables: { username:owner }, data });					
+					store.writeQuery({ query: profileQuery,variables: { username:displayName }, data });					
 				}
 			})
 	})

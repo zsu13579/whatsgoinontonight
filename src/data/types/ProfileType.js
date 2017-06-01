@@ -14,12 +14,13 @@ import {
   GraphQLNonNull as NonNull,
 } from 'graphql';
 
-const UserType = new ObjectType({
-  name: 'User',
+const ProfileType = new ObjectType({
+  name: 'Profile',
   fields: {
-    id: { type: new NonNull(ID) },
-    email: { type: StringType },
+    id: { type: new NonNull(StringType) },
+    displayName: { type: StringType },
+    picture: { type: StringType },
   },
 });
 
-export default UserType;
+export default ProfileType;

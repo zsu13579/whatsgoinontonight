@@ -7,6 +7,7 @@
  * LICENSE.txt file in the root directory of this source tree.
  */
 
+import { UserProfile } from '../models';
 import ProfileType from '../types/ProfileType';
 import {
   GraphQLString as StringType,
@@ -17,12 +18,12 @@ import {
 const profile = {
   type: ProfileType,
   args: {
-	id: { type: StringType },
-    owner: { type: StringType },
-    imgAvatar: { type: StringType },
-  }
+	  id: { type: StringType },
+    displayName: { type: StringType },
+    picture: { type: StringType },
+  },
   async resolve(root, args) {
-    const result = await Profile.findOne({where: args});
+    const result = await UserProfile.findOne({where: {displayName: args.displayName}});
     return result;
   },
 };
