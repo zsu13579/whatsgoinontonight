@@ -1,0 +1,5 @@
+query ($username: String){
+  profile(owner:$username) {
+	owner, imgAvatar
+  }
+}	

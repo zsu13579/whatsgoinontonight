@@ -13,55 +13,47 @@ import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import s from './Profile.css';
 import { graphql, compose } from 'react-apollo';
 import { connect } from 'react-redux';
-import { FormGroup, ControlLabel,HelpBlock,FormControl  } from 'react-bootstrap';
 import FileUpload from 'react-fileupload';
-
+import { FormGroup, Button,ControlLabel,HelpBlock,FormControl  } from 'react-bootstrap'
+import Upload from 'rc-upload';
 
 class Profile extends React.Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      imgAvatar: "default.png"
+    };
+	this.handleUpload = this.handleUpload.bind(this)
+  }
+
   static propTypes = {
     title: PropTypes.string.isRequired,
   };
 
+  handleUpload = (filename) =>{
+    console.log(filename);
+    this.setState({imgAvatar: filename });
+  }
+
   render() {
+		
+    const uploaderProps = {
+      action: '/profile',
+      name: 'avatar',
+      multiple: true,
+      supportServerRender: true,
+      onSuccess: (file) => {
+		this.handleUpload(file.filename)        
+      },
+    };
 	
-	const options={
-        baseUrl:'./upload',
-        param:{
-
-        }
-    }
-	
-    function FieldGroup({ id, label, help, ...props }) {
-      return (
-        <FormGroup controlId={id}>
-          <ControlLabel>{label}</ControlLabel>
-          <FormControl {...props} />
-          {help && <HelpBlock>{help}</HelpBlock>}
-        </FormGroup>
-      );
-    }
-
-    const formInstance = (
-        <form>
-          <FieldGroup
-            id="formControlsFile"
-            type="file"
-            label="File"
-            help="upload your avatar."
-          />
-        </form>
-        )
-
     return (
       <div className={s.root}>
         <div className={s.container}>
-          <h1>{this.props.title}</h1>
-          {formInstance}
-		  <FileUpload options={options}>
-            <button ref="chooseBtn">choose</button>
-            <button ref="uploadBtn">upload</button>
-		  </FileUpload>
-          <p>{this.props.username}</p>
+          <h1>{this.props.title} <Upload {...uploaderProps} ref="inner" className={s.avatarEdit} ><a>更新头像</a></Upload></h1>
+          <img src={this.state.imgAvatar} />
+          <h3>User : {this.props.username}</h3>
         </div>
       </div>
     );
@@ -75,7 +67,31 @@ const mapStateToProps = (state) => {
   return {}
 }
 
+const withData = graphql(profileQuery,{
+	options: (ownProps) => ({ variables: { username: ownProps.username } }),
+	props: ({data: { loading, profile }}) => ({ loading, profile || { imgAvatar: 'default.png' } )
+})
+
+const withMutations = graphql(profileMutation,{
+	props: ({ ownProps,mutate }) => ({
+		uploadAvatar: ({ owner, imgAvatar }) => 
+			mutate({
+				variables: { owner, imgAvatar },
+				update: ( store, { data: profile}) => {
+					// Read the data from our cache for this query.
+					const data = store.readQuery({ query: profileQuery, variables: { username:owner } });
+					// Add our comment from the mutation to the end.
+					data.profile.imgAvatar = imgAvatar; 			
+					// Write our data back to the cache.
+					store.writeQuery({ query: profileQuery,variables: { username:owner }, data });					
+				}
+			})
+	})
+})
+
 export default compose(
   withStyles(s),
   connect(mapStateToProps),
+  withData,
+  withMutations,
   )(Profile);

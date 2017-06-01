@@ -1,0 +1,6 @@
+mutation uploadAvatar($owner: String!, $imgAvatar: String!){
+  uploadAvatar (
+    owner: $owner,
+	imgAvatar: $imgAvatar,
+  ){owner, imgAvatar}
+}
