@@ -13,7 +13,9 @@ import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import s from './Profile.css';
 import { graphql, compose } from 'react-apollo';
 import { connect } from 'react-redux';
-import { FormGroup, ControlLabel,HelpBlock,FormControl  } from 'react-bootstrap'
+import { FormGroup, ControlLabel,HelpBlock,FormControl  } from 'react-bootstrap';
+import FileUpload from 'react-fileupload';
+
 
 class Profile extends React.Component {
   static propTypes = {
@@ -21,7 +23,14 @@ class Profile extends React.Component {
   };
 
   render() {
+	
+	const options={
+        baseUrl:'./upload',
+        param:{
 
+        }
+    }
+	
     function FieldGroup({ id, label, help, ...props }) {
       return (
         <FormGroup controlId={id}>
@@ -48,6 +57,10 @@ class Profile extends React.Component {
         <div className={s.container}>
           <h1>{this.props.title}</h1>
           {formInstance}
+		  <FileUpload options={options}>
+            <button ref="chooseBtn">choose</button>
+            <button ref="uploadBtn">upload</button>
+		  </FileUpload>
           <p>{this.props.username}</p>
         </div>
       </div>
