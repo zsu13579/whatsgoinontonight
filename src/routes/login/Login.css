@@ -83,6 +83,16 @@
   box-shadow: 0 0 8px rgba(0, 116, 194, 0.6);
 }
 
+.github {
+  border-color: green;
+  background: green;
+  composes: button;
+}
+
+.github:hover {
+  background: #2d4373;
+}
+
 .facebook {
   border-color: #3b5998;
   background: #3b5998;

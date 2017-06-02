@@ -77,6 +77,20 @@ app.get('/login/facebook/return',
     res.redirect('/');
   },
 );
+
+app.get('/login/github',
+  passport.authenticate('github')
+);
+app.get('/login/github/return',
+  passport.authenticate('github', { failureRedirect: '/login', session: false }),
+  (req, res) => {
+    const expiresIn = 60 * 60 * 24 * 180; // 180 days
+    const token = jwt.sign(req.user, auth.jwt.secret, { expiresIn });
+    res.cookie('id_token', token, { maxAge: 1000 * expiresIn, httpOnly: true });
+    res.redirect('/');
+  },
+);
+
 app.post('/login', 
   passport.authenticate('local', { failureRedirect: '/login' }),
   (req, res) => {

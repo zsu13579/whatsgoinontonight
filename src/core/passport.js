@@ -15,6 +15,7 @@
 
 import passport from 'passport';
 import { Strategy as LocalStrategy } from 'passport-local';
+import { Strategy as GithubStrategy } from 'passport-github';
 import { Strategy as FacebookStrategy } from 'passport-facebook';
 import { User, UserLogin, UserClaim, UserProfile } from '../data/models';
 import { auth as config } from '../config';
@@ -64,6 +65,48 @@ passport.deserializeUser(function(key, cb) {
 
 
 /**
+ * Sign in with Github.
+ */
+passport.use(new GithubStrategy({
+  clientID: config.github.id,
+  clientSecret: config.github.secret,
+  callbackURL: '/login/github/return',
+  profileFields: ['name', 'email', 'link', 'locale', 'timezone'],
+  passReqToCallback: true,
+}, (req, accessToken, refreshToken, profile, done) => {
+  /* eslint-disable no-underscore-dangle */
+  const loginName = 'Jacklv';
+  const claimType = 'urn:github:access_token';
+  const fooBar = async () => {
+	const user1 = await User.findOne({githubId: profile.id});
+	if(user1){
+		return user1;
+	}	
+	const user = await User.create({
+	  id: profile.id,
+	  email: profile._json.email,
+	  logins: [
+		{ name: loginName, key: profile.id },
+	  ],
+	  claims: [
+		{ type: claimType, value: profile.id },
+	  ],
+	  profile: {
+		displayName: profile.login,
+		picture: profile.avatar_url,
+	  },
+	}, {
+	  include: [
+		{ model: UserLogin, as: 'logins' },
+		{ model: UserClaim, as: 'claims' },
+		{ model: UserProfile, as: 'profile' },
+	  ],
+	});
+  };
+  fooBar().catch(done);
+}));
+
+/**
  * Sign in with Facebook.
  */
 passport.use(new FacebookStrategy({
@@ -74,7 +117,7 @@ passport.use(new FacebookStrategy({
   passReqToCallback: true,
 }, (req, accessToken, refreshToken, profile, done) => {
   /* eslint-disable no-underscore-dangle */
-  const loginName = 'facebook';
+  const loginName = 'Jacklv';
   const claimType = 'urn:facebook:access_token';
   const fooBar = async () => {
     if (req.user) {
@@ -167,5 +210,23 @@ passport.use(new FacebookStrategy({
 
   fooBar().catch(done);
 }));
+
+// Configure Passport authenticated session persistence.
+//
+// In order to restore authentication state across HTTP requests, Passport needs
+// to serialize users into and deserialize users out of the session.  The
+// typical implementation of this is as simple as supplying the user ID when
+// serializing, and querying the user record by ID from the database when
+// deserializing.
+passport.serializeUser(function(user, cb) {
+  cb(null, user.id);
+});
+
+passport.deserializeUser(function(key, cb) {
+  User.findOne({ id: id }, function (err, user) {
+    if (err) { return cb(err); }
+    cb(null, user);
+  });
+});
 
 export default passport;

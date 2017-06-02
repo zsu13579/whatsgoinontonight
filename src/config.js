@@ -27,6 +27,12 @@ export const auth = {
 
   jwt: { secret: process.env.JWT_SECRET || 'React Starter Kit' },
 
+  // https://developer.github.com/apps/building-integrations/setting-up-and-registering-oauth-apps/
+  github: {
+    id: process.env.GITHUB_APP_ID || '7feef83588b1de410423',
+    secret: process.env.GITHUB_APP_SECRET || 'cd202a3e9b36b7a300eb39af0d97e350409eaa4a',
+  },
+  
   // https://developers.facebook.com/
   facebook: {
     id: process.env.FACEBOOK_APP_ID || '186244551745631',
