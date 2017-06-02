@@ -78,10 +78,10 @@ passport.use(new GithubStrategy({
   const loginName = 'Jacklv';
   const claimType = 'urn:github:access_token';
   const fooBar = async () => {
-	const user1 = await User.findOne({githubId: profile.id});
-	if(user1){
-		return user1;
-	}	
+	const user1 = await User.findAll({id: profile.id});
+	if(user1.length){
+    done(null, user1[0]);
+  }else{
 	const user = await User.create({
 	  id: profile.id,
 	  email: profile._json.email,
@@ -102,9 +102,28 @@ passport.use(new GithubStrategy({
 		{ model: UserProfile, as: 'profile' },
 	  ],
 	});
+  }; 
   };
   fooBar().catch(done);
 }));
+
+// Configure Passport authenticated session persistence.
+//
+// In order to restore authentication state across HTTP requests, Passport needs
+// to serialize users into and deserialize users out of the session.  The
+// typical implementation of this is as simple as supplying the user ID when
+// serializing, and querying the user record by ID from the database when
+// deserializing.
+passport.serializeUser(function(user, cb) {
+  cb(null, user.id);
+});
+
+passport.deserializeUser(function(key, cb) {
+  User.findOne({ id: id }, function (err, user) {
+    if (err) { return cb(err); }
+    cb(null, user);
+  });
+});
 
 /**
  * Sign in with Facebook.
