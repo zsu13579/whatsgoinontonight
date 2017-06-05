@@ -19,7 +19,8 @@ import { Strategy as GithubStrategy } from 'passport-github';
 import { Strategy as FacebookStrategy } from 'passport-facebook';
 import { User, UserLogin, UserClaim, UserProfile } from '../data/models';
 import { auth as config } from '../config';
-import db from '../data/db'
+import db from '../data/db';
+import bcrypt from 'bcryptjs';
 
 
 /**
@@ -38,7 +39,7 @@ passport.use(new LocalStrategy(
 	
     let userjson = JSON.parse(JSON.stringify(user));
   	if (!userjson) { return cb(null, false); }
-  	if (userjson.password != password) { return cb(null, false); }
+  	if (!bcrypt.compareSync(password, userjson.password)) { return cb(null, false); }
   	return cb(null, userjson);
   	});
 	

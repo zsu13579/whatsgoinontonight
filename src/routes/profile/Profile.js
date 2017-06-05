@@ -14,7 +14,7 @@ import s from './Profile.css';
 import { graphql, compose } from 'react-apollo';
 import { connect } from 'react-redux';
 import FileUpload from 'react-fileupload';
-import { FormGroup, Button,ControlLabel,HelpBlock,FormControl  } from 'react-bootstrap'
+import { FormGroup, Modal, Button,ControlLabel,HelpBlock,FormControl  } from 'react-bootstrap'
 import Upload from 'rc-upload';
 import profileQuery from './profileQuery.graphql';
 import profileMutation from './profileMutation.graphql';
@@ -23,9 +23,8 @@ class Profile extends React.Component {
 
   constructor(props) {
     super(props);
-    this.state = {
-    };
-	   this.handleUpload = this.handleUpload.bind(this);
+    this.state = { showModal: false, confirmPwdHint: "" };
+	this.handleUpload = this.handleUpload.bind(this);
   }
 
   static propTypes = {
@@ -36,7 +35,23 @@ class Profile extends React.Component {
     let displayName = this.props.username;
     let picture = filename;
     this.props.uploadAvatar({displayName, picture});
+  };
+  
+  open = () => {
+	this.setState({ showModal: true, confirmPwdHint: "" })  
+  };
+  
+  close = () => {
+	this.setState({ showModal: false })  
+  };
+  
+  handleConfirmPwd = (e) => {
+	if(this.newPwd.value != e.target.value){ this.setState({ confirmPwdHint: "Two input passwords not the same!" }) }   
   }
+  
+  handleChangePwd = () => {
+	  
+  };
 
   render() {
 		
@@ -50,13 +65,67 @@ class Profile extends React.Component {
       },
     };
 	
+	const formInstance = (
+      <form>
+        
+        <FormGroup
+          controlId="oldPwd"
+        >
+          <ControlLabel>Old Password</ControlLabel>
+          <FormControl
+            type="text"
+            placeholder="Enter old password"
+			inputRef= { ref => { this.oldPwd = ref; }}
+          />
+        </FormGroup>
+		<FormGroup
+          controlId="newPwd"
+        >
+          <ControlLabel>New Password</ControlLabel>
+          <FormControl
+            type="text"
+            placeholder="Enter new password"
+			inputRef= { ref => { this.newPwd = ref; }}
+          />
+        </FormGroup>
+		<FormGroup
+          controlId="confirmNewPwd"
+        >
+          <ControlLabel>Confirm New Password</ControlLabel>
+          <FormControl
+            type="text"
+            placeholder="Enter new password again"
+			inputRef= { ref => { this.confirmNewPwd = ref; }}
+			onChange= { this.handleConfirmPwd }
+          />
+		  { this.state.confirmPwdHint }
+        </FormGroup>
+      </form>
+    );
+	
     return (
       <div className={s.root}>
         <div className={s.container}>
           <h1>{this.props.title} <Upload {...uploaderProps} ref="inner" className={s.avatarEdit} ><a>更新头像</a></Upload></h1>
           {this.props.profile.picture ? <img src={this.props.profile.picture} /> : <img src="default.png" /> }
-          <h3>User : {this.props.username}</h3>
-
+          <h3>User : {this.props.username}  </h3> <h5 className={s.changePwd} onClick={this.open}><a>更新密码</a></h5>
+		  <Modal
+            show={this.state.showModal}
+            onHide={this.close}
+            container={this}
+            aria-labelledby="contained-modal-title"
+          >
+            <Modal.Header closeButton>
+              <Modal.Title id="contained-modal-title">Change Your Password</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              { formInstance }
+            </Modal.Body>
+            <Modal.Footer>
+              <Button bsStyle="primary" onClick={this.handleAddWin}>Submit</Button>
+              <Button onClick={this.close}>Close</Button>
+            </Modal.Footer>
+          </Modal>	
         </div>
       </div>
     );

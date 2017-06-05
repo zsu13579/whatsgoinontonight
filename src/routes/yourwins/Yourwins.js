@@ -102,19 +102,19 @@ class Yourwins extends React.Component {
           <h1>Your Wins</h1>
           <Button bsStyle="primary" bsSize="large" onClick={open}>Add a Win</Button>  
           
-    		  <Masonry className={s.mason} >  
-      		  {this.props.wins.map(item => (
-      			<Win className={s.myGallery1} 
-                id = {item.id}
-                imgurl = {item.img}
-                title = {item.title}
-                like = {item.like}
-                notlike = {item.notlike}
-                key = {item.id} 
-                deleteFlag = "1"
-            />  
-            ))}
-    		  </Masonry>
+		  <Masonry className={s.mason} >  
+			  {this.props.wins.map(item => (
+				<Win className={s.myGallery1} 
+				id = {item.id}
+				imgurl = {item.img}
+				title = {item.title}
+				like = {item.like}
+				notlike = {item.notlike}
+				key = {item.id} 
+				deleteFlag = "1"
+			/>  
+			))}
+		  </Masonry>
 		  
           <Modal
             show={this.state.showModal}

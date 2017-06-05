@@ -34,6 +34,7 @@ import { setRuntimeVariable } from './actions/runtime';
 import { port, auth } from './config';
 import { User, UserLogin, UserClaim, UserProfile, Wins } from './data/models';
 import multer from 'multer';
+import bcrypt from 'bcryptjs';
 
 const app = express();
 
@@ -110,11 +111,13 @@ app.post('/register',
   (req, res, done) => {
   const username=req.body.username;
   const password=req.body.password;
+  const salt = bcrypt.genSaltSync(10);
+  const hash = bcrypt.hashSync(password, salt);
   const fooBar = async () => {
     // User.drop();
     let user = await User.create({
     email: username,
-    password: password,
+    password: hash,
     emailConfirmed: false,
     logins: [
       { name: username, key: username+"001" },
@@ -168,7 +171,22 @@ app.post('/profile', upload.single('avatar'), function (req, res, next) {
   res.end(JSON.stringify(result)) 
 })
 
-
+app.post('/changePwd', 
+  passport.authenticate('local', { failureRedirect: '/login' }),
+  (req, res, done) => {
+  const username=req.body.username;
+  const password=req.body.password;
+  const salt = bcrypt.genSaltSync(10);
+  const hash = bcrypt.hashSync(password, salt);
+  const fooBar = async () => {
+    // User.drop();
+	let password = {password: hash};
+    let user = await User.update(password, {where:{owner:username}});
+  }
+  fooBar().catch(done); 
+    res.redirect('/login');
+  });
+  
 //
 // Register API middleware
 // -----------------------------------------------------------------------------

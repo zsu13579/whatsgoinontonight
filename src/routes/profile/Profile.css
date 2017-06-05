@@ -23,3 +23,7 @@
 .avatarEdit {
   font-size: 12px;	
 }
+
+.changePwd {
+  cursor: pointer;
+}
