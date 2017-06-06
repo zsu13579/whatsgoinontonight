@@ -66,8 +66,18 @@ class Profile extends React.Component {
     };
 	
 	const formInstance = (
-      <form>
+      <form action="changePwd" method="post" >
         
+		<FormGroup
+          controlId="username"
+        >
+          <FormControl
+            type="hidden"
+            value={this.props.username}
+			name="username"
+			inputRef= { ref => { this.oldPwd = ref; }}
+          />
+        </FormGroup>
         <FormGroup
           controlId="oldPwd"
         >
@@ -75,6 +85,7 @@ class Profile extends React.Component {
           <FormControl
             type="text"
             placeholder="Enter old password"
+			name="password"
 			inputRef= { ref => { this.oldPwd = ref; }}
           />
         </FormGroup>
@@ -84,6 +95,7 @@ class Profile extends React.Component {
           <ControlLabel>New Password</ControlLabel>
           <FormControl
             type="text"
+			name="newPassword"
             placeholder="Enter new password"
 			inputRef= { ref => { this.newPwd = ref; }}
           />
@@ -100,6 +112,15 @@ class Profile extends React.Component {
           />
 		  { this.state.confirmPwdHint }
         </FormGroup>
+		<FormGroup
+          controlId="changePwdSubmit"
+        >
+          <FormControl
+            type="submit"
+			inputRef= { ref => { this.changePwdSubmit = ref; }}
+			value="Submit"
+          />
+        </FormGroup>
       </form>
     );
 	
@@ -107,7 +128,16 @@ class Profile extends React.Component {
       <div className={s.root}>
         <div className={s.container}>
           <h1>{this.props.title} <Upload {...uploaderProps} ref="inner" className={s.avatarEdit} ><a>更新头像</a></Upload></h1>
-          {this.props.profile.picture ? <img src={this.props.profile.picture} /> : <img src="default.png" /> }
+		  {
+			(() => {
+				if(this.props.profile){
+				 return this.props.profile.picture ? <img src={this.props.profile.picture} /> : <img src="default.png" /> 
+				}else{
+				 return <img src="default.png" />  
+				}
+		    })()
+	      }
+		   
           <h3>User : {this.props.username}  </h3> <h5 className={s.changePwd} onClick={this.open}><a>更新密码</a></h5>
 		  <Modal
             show={this.state.showModal}
@@ -122,10 +152,10 @@ class Profile extends React.Component {
               { formInstance }
             </Modal.Body>
             <Modal.Footer>
-              <Button bsStyle="primary" onClick={this.handleAddWin}>Submit</Button>
+              <Button bsStyle="primary" onClick={this.handleChangePwd} style={{display: "none"}}>Submit</Button>
               <Button onClick={this.close}>Close</Button>
             </Modal.Footer>
-          </Modal>	
+          </Modal>
         </div>
       </div>
     );

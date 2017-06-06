@@ -38,6 +38,9 @@ passport.use(new LocalStrategy(
 	User.findOne({ where: { email: username } }).then(function(user){
 	
     let userjson = JSON.parse(JSON.stringify(user));
+	console.log(username)
+	console.log(password)
+	console.log(userjson)
   	if (!userjson) { return cb(null, false); }
   	if (!bcrypt.compareSync(password, userjson.password)) { return cb(null, false); }
   	return cb(null, userjson);
@@ -81,7 +84,7 @@ passport.use(new GithubStrategy({
   const fooBar = async () => {
 	const user1 = await User.findAll({id: profile.id});
 	if(user1.length){
-    done(null, user1[0]);
+    done(null, JSON.parse(JSON.stringify(user1[0])));
   }else{
 	const user = await User.create({
 	  id: profile.id,

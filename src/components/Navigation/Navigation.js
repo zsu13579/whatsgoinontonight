@@ -19,6 +19,7 @@ class Navigation extends React.Component {
     const { username } = this.props;
     return username ? (
       <div className={s.root} role="navigation">
+		<Link className={s.link} to="/">Home</Link>
         <Link className={s.link} to="/recentwins">Recent Wins</Link>
         <Link className={s.link} to="/yourwins">Your Winboard</Link>
         <Link className={s.link} to="/profile"><i className="fa fa-cog fa-fw" aria-hidden="true"></i></Link>

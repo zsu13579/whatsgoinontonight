@@ -104,7 +104,7 @@ app.get('/logout',
   (req, res) => {
   // console.log('clearcookielog at server.js');
     res.clearCookie('id_token');
-    res.redirect('/');
+    res.redirect('/login');
   },
 );
 app.post('/register',
@@ -174,17 +174,17 @@ app.post('/profile', upload.single('avatar'), function (req, res, next) {
 app.post('/changePwd', 
   passport.authenticate('local', { failureRedirect: '/login' }),
   (req, res, done) => {
-  const username=req.body.username;
-  const password=req.body.password;
+  const username=req.user.email;
+  const password=req.body.newPassword;
   const salt = bcrypt.genSaltSync(10);
   const hash = bcrypt.hashSync(password, salt);
   const fooBar = async () => {
     // User.drop();
 	let password = {password: hash};
-    let user = await User.update(password, {where:{owner:username}});
+    let user = await User.update(password, {where:{email:username}});
   }
   fooBar().catch(done); 
-    res.redirect('/login');
+    res.redirect('/logout');
   });
   
 //

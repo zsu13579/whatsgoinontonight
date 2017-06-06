@@ -17,7 +17,7 @@ export default {
 
   async action() {
     return {
-      title: 'React Starter Kit',
+      title: 'Welcome Winners',
       component: <Layout><Home /></Layout>,
     };
   },
