@@ -25,9 +25,9 @@ import run from './run';
 // Heroku
 const remote = {
   name: 'heroku',
-  url: 'https://git.heroku.com/lv-pinterest-apollo.git',
+  url: 'https://git.heroku.com/lv-whatsgoinontonight.git',
   branch: 'master',
-  website: 'https://lv-pinterest-apollo.herokuapp.com',
+  website: 'https://lv-whatsgoinontonight.herokuapp.com',
 };
 
 // Azure Web Apps
