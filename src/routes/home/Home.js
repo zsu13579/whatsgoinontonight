@@ -24,7 +24,7 @@ class Home extends React.Component {
     return (
       <div className={s.root}>
         <div className={s.container}>
-          <h1>Welcome Winners</h1>          
+          <h1>Where do you want to go</h1>          
         </div>
       </div>
     );
