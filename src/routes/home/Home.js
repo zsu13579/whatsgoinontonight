@@ -11,7 +11,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { graphql, compose } from 'react-apollo';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
-import s from './Home.css';
+import s from './SearchResult.css';
 import { Alert,Form,Button,Panel,Accordion,Modal,FormGroup,FormControl,ControlLabel,HelpBlock,InputGroup,Image,Glyphicon,DropdownButton,MenuItem } from 'react-bootstrap';
 
 
@@ -19,7 +19,7 @@ class Home extends React.Component {
 
   constructor(...args) {
     super(...args);
-	this.sate = { funList:[] };
+	this.sate = { funList:[], showResult: false, searchKey: "New York" };
   };
   
   handleSearch = () => {
@@ -48,6 +48,10 @@ class Home extends React.Component {
 				Search
 			</Button>
 		  </Form>
+		  { this.state.showResult ?
+		  <SearchResult
+			searchKey = { this.state.searchKey }
+		  /> : "" }
 		  { 
 			this.state.funList.map(item => (
 				item.business.name
@@ -62,7 +66,7 @@ class Home extends React.Component {
 const withData = graphql({
 	props: ({ ownProps, mutate }) => ({
     citySearch: ({ city }) =>
-      mutate({
+      query({
         variables: { title, url, owner },
         // optimisticResponse: {
           // __typename: 'Mutation',
