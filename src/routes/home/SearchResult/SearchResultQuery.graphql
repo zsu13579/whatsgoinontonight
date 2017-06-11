@@ -1,0 +1,5 @@
+query ($username: String){
+  searchResult(owner:$username) {
+	id
+  }
+}	

@@ -1,0 +1,9 @@
+mutation enroll($title: String!,$owner: String!, $url: String!){
+  enroll (
+    title: $title,
+    owner: $owner,
+    like: 0,
+	notlike: 0,
+	img: $url,
+  ){id}
+}
