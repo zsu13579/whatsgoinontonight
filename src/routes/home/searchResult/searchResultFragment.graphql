@@ -1,0 +1,8 @@
+fragment WinInfo on WinsItem{
+	id
+	title
+	owner
+	like
+	notlike
+	img
+}

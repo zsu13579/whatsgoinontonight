@@ -1,0 +1,10 @@
+#import "./WinFragment.graphql"
+mutation addwin($title: String!,$owner: String!, $url: String!){
+  addwin (
+    title: $title,
+    owner: $owner,
+    like: 0,
+	notlike: 0,
+	img: $url,
+  ){...WinInfo}
+}
