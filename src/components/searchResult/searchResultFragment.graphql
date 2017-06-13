@@ -1,0 +1,5 @@
+fragment SearchInfo on SearchItem{
+	id
+	name
+	desc
+}

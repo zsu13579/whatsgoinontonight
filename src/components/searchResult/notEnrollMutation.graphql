@@ -1,0 +1,3 @@
+mutation notEnroll($id:String!){
+	notEnroll(id:$id)
+}

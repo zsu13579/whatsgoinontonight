@@ -1,0 +1,3 @@
+mutation enroll($name:String!){
+	enroll(name:$name)
+}

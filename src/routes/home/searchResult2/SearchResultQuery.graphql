@@ -1,6 +1,0 @@
-#import "./WinFragment.graphql"
-query ($username: String){
-  wins(owner:$username) {
-	...WinInfo
-  }
-}	

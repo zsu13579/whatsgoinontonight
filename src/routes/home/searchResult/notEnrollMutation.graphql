@@ -1,3 +1,0 @@
-mutation addLike($id:String!, $addtype: String){
-	addlike(id:$id, addtype:$addtype)
-}

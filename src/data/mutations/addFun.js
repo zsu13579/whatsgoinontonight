@@ -8,8 +8,8 @@
  */
 
 import { GraphQLList as List } from 'graphql';
-import WinsItemType from '../types/WinsItemType';
-import { Wins } from '../models';
+import EnrollType from '../types/EnrollType';
+import { Enroll } from '../models';
 import {
   GraphQLObjectType as ObjectType,
   GraphQLString as StringType,
@@ -17,21 +17,16 @@ import {
   GraphQLNonNull as NonNull,
 } from 'graphql';
 
-const addwin = {
-  type: WinsItemType,
+const addFun = {
+  type: EnrollType,
   args: {
-    title: { type: new NonNull(StringType) },
+    name: { type: new NonNull(StringType) },
     owner: { type: new NonNull(StringType) },
-    img: { type: StringType },
-    like: { type: IntType },
-    notlike: { type: IntType },
   },
   resolve: async function(rootValue, args) {
-	let winVal = Object.assign({}, args);
-	await Wins.create(winVal);
-	const result = await Wins.findOne({where: {title: args.title}});
-	return result;
+	let enrollVal = Object.assign({}, args);
+	return Enroll.create(enrollVal);
   }
 }
 
-export default addwin;
+export default addFun;

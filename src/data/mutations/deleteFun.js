@@ -1,4 +1,4 @@
-import { Wins } from '../models';
+import { Enroll } from '../models';
 import {
   GraphQLObjectType as ObjectType,
   GraphQLString as StringType,
@@ -6,14 +6,14 @@ import {
   GraphQLNonNull as NonNull,
 } from 'graphql';
 
-const deletewin = {
+const deleteFun = {
   type: StringType,
   args: {
     id: { type: new NonNull(StringType) },
   },
   resolve: function(rootValue, args) {
-	return Wins.destroy({where: {id: args.id}});
+	return Enroll.destroy({where: {id: args.id}});
   }
 }
 
-export default deletewin;
+export default deleteFun;
