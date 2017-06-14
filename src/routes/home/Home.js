@@ -48,7 +48,7 @@ class Home extends React.Component {
     		  </Form>
     		  { this.state.showResult ?
     		  <SearchResult
-    			searchKey = { this.state.searchKey }
+    			searchKey = "{ this.state.searchKey }"
     		  /> : "" }
         </div>
       </div>

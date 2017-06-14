@@ -9,8 +9,9 @@ import {
 const SearchType = new ObjectType({
   name: 'Search',
   fields: {
-	id: { type: new NonNull(StringType) },  
+	  id: { type: new NonNull(StringType) },  
     name: { type: new NonNull(StringType) },
+    desc: { type: StringType },
     isEnroll: { type: IntType },
   },
 });

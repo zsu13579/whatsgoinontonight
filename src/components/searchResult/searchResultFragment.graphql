@@ -1,4 +1,4 @@
-fragment SearchInfo on SearchItem{
+fragment SearchInfo on Search{
 	id
 	name
 	desc

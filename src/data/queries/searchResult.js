@@ -27,18 +27,28 @@ const searchResult = {
 	  term:'Four Barrel Coffee',
 	  location: 'san francisco, ca'
 	};
-	yelp.accessToken(clientId, clientSecret).then(response => {
-	  const client = yelp.client(response.jsonBody.access_token);
+	// const result2 = await yelp.accessToken(clientId, clientSecret).then(response => {
+	//   const client = yelp.client(response.jsonBody.access_token);
 
-	  client.search(searchRequest).then(response => {
-		const firstResult = response.jsonBody.businesses[0];
-		const prettyJson = JSON.stringify(firstResult, null, 4);
-		console.log(prettyJson);
-	  });
-	}).catch(e => {
-	  console.log(e);
-	});
-	return result || [];
+	//   client.search(searchRequest).then(response => {
+	// 	const firstResult = response.jsonBody.businesses[0];
+	// 	const prettyJson = JSON.stringify(firstResult, null, 4);
+	// 	console.log(prettyJson);
+	// 	return prettyJson;
+	//   });
+	// }).catch(e => {
+	//   console.log(e);
+	// });
+
+	const res = await yelp.accessToken(clientId, clientSecret);
+	const client = await yelp.client(res.jsonBody.access_token);
+	const res2 = await client.search(searchRequest);
+	const firstResult = await res2.jsonBody.businesses;
+	const prettyJson = await JSON.stringify(firstResult, null, 4);
+	// console.log(prettyJson);
+	return firstResult || [];
+
+	// return result2 || [];
   },
 };
 

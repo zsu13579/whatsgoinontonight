@@ -33,11 +33,11 @@ class SearchResult extends React.Component {
         <div className={s.container}>   		
 		  { 
 			this.props.searchResult.map(item => (
-			 <span className={s.myGallery} key={item.id} >	
-				item.name
-				<i onClick={this.addFun} name={item.name}>{item.isEnroll || 0}</i>;
-				{item.isEnroll == 1 ? (<i><i className="fa fa-times" onClick={this.deleteFun} id={item.id}></i>&nbsp;&nbsp;</i>) : <i></i>};            
-			 </span>
+			 <h5 className={s.myGallery} key={item.id} >	
+				{item.name}
+				<i onClick={this.addFun} name={item.name}>{item.isEnroll || 0}</i>
+				{item.isEnroll == 1 ? (<i><i className="fa fa-times" onClick={this.deleteFun} id={item.id}></i></i>) : <i></i>}            
+			 </h5>
 			))
 		  }	
         </div>
