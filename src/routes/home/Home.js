@@ -19,13 +19,13 @@ class Home extends React.Component {
 
   constructor(...args) {
     super(...args);
-	this.sate = { showResult: false, searchKey: "New York" };
+	this.state = { showResult: false, searchKey: "New York" };
   };
   
   handleSearch = () => {
-	  let city = this.cityipt;
-		this.setState({ searchKey:city });
-  }
+	let city = this.cityipt;
+	this.setState({ searchKey:city, showResult: true });
+  };
 
   render() {
     return (
@@ -42,7 +42,7 @@ class Home extends React.Component {
       				inputRef= { ref => { this.cityipt = ref; }}
       			  />
       			</FormGroup>
-      			<Button bsStyle="primary" bsSize="large" onClick={handleSearch}>
+      			<Button bsStyle="primary" bsSize="large" onClick={this.handleSearch}>
       				Search
       			</Button>
     		  </Form>

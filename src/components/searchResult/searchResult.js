@@ -59,7 +59,7 @@ const enrollMutations = graphql(enrollMutation,{
   props: ({ ownProps, mutate }) => ({
     enroll: ({ funName }) =>
       mutate({
-        variables: { ownProps.username, funName },
+        variables: { funName },
         refetchQueries: [{
           query: searchResultQuery
         }],
@@ -69,7 +69,7 @@ const enrollMutations = graphql(enrollMutation,{
 
 const notEnrollMutations = graphql(notEnrollMutation,{
   props: ({ ownProps, mutate }) => ({
-    enroll: () =>
+    notEnroll: () =>
       mutate({
         variables: { id },
         refetchQueries: [{
@@ -94,5 +94,6 @@ export default compose(
   withStyles(s),
   connect(mapStateToProps),
   withData,
-  searchResultMutations,
+  enrollMutations,
+  notEnrollMutations,
 )(SearchResult);
