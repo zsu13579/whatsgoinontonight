@@ -108,7 +108,7 @@ app.get('/logout',
   },
 );
 app.post('/register',
-  (req, res, done) => {
+  async (req, res, done) => {
   const username=req.body.username;
   const password=req.body.password;
   const salt = bcrypt.genSaltSync(10);
@@ -135,13 +135,40 @@ app.post('/register',
       { model: UserProfile, as: 'profile' },
     ],
     });
+
     done(null, {
     id: user.id,
     username: user.email,
     }); 
+
+    return user;
   }
-  fooBar().catch(done); 
-    res.redirect('/login');
+    // login automatically after register
+    const user = await fooBar().catch(done); 
+    let userjson = JSON.parse(JSON.stringify(user));
+    userjson.username = userjson.email;
+    console.log(userjson)
+    req.login(userjson, function(err){
+      if(!err){
+        const expiresIn = 60 * 60 * 24 * 180; // 180 days
+        const token = jwt.sign(userjson, auth.jwt.secret, { expiresIn });
+        console.log(token);
+        res.cookie('id_token', token, { maxAge: 1000 * expiresIn, httpOnly: true });          
+        return res.redirect('/');
+      }else{
+        //handle error
+        console.log(err);
+      }
+    })
+    
+    // passport.authenticate('local')(
+    //   (req, res, function() {
+    //   const expiresIn = 60 * 60 * 24 * 180; // 180 days
+    //     const token = jwt.sign(req.user, auth.jwt.secret, { expiresIn });
+    //     res.cookie('id_token', token, { maxAge: 1000 * expiresIn, httpOnly: true });  
+    //     res.redirect('/');
+    //   });
+    // res.redirect('/');
   });
 
 app.post('/yourwins',
