@@ -16,15 +16,28 @@ class SearchResult extends React.Component {
     super(...args);
   }
 
-  addFun = (e) =>{
-    let name = e.target.name;
-    this.props.addFun({ name });
+  enroll = (e) =>{
+    let name = e.target.id;
+	console.log(name);
+    this.props.enroll({ name });
   }
 
-  deleteFun = (e) => {
+  notEnroll = (e) => {
     let id = e.target.id;
-    this.props.deleteFun({ id });
+    this.props.notEnroll({ id });
   }
+  
+  handleReg = (e) => {
+  	// let title = this.titleipt.value;
+  	// let url = this.urlipt.value;
+  	// let owner = this.props.username;
+  	// this.props.submit({title, url, owner}).then((out) =>	
+  	// {
+  	// // this.props.data.refetch();	
+  	// this.setState({ showModal: false, });
+  	// })
+	console.log("123")
+  };
 
   render() {
     let { searchKey } = this.props;
@@ -35,8 +48,8 @@ class SearchResult extends React.Component {
 			this.props.searchResult.map(item => (
 			 <h5 className={s.myGallery} key={item.id} >	
 				{item.name}
-				<i onClick={this.addFun} name={item.name}>{item.isEnroll || 0}</i>
-				{item.isEnroll == 1 ? (<i><i className="fa fa-times" onClick={this.deleteFun} id={item.id}></i></i>) : <i></i>}            
+				<i onClick={this.props.username ? this.enroll : this.handleReg} id={item.name}> {item.isEnroll || 0}</i>
+				{item.isEnroll == 1 ? (<i> <i className="fa fa-times" onClick={this.notEnroll} id={item.dbId}></i></i>) : <i></i>}            
 			 </h5>
 			))
 		  }	
@@ -57,11 +70,12 @@ function mapStateToProps(state) {
 
 const enrollMutations = graphql(enrollMutation,{
   props: ({ ownProps, mutate }) => ({
-    enroll: ({ funName }) =>
+    enroll: ({ name }) =>
       mutate({
-        variables: { funName },
+        variables: { name, owner: ownProps.username },
         refetchQueries: [{
-          query: searchResultQuery
+          query: searchResultQuery,
+		  variables: {searchKey: ownProps.searchKey, username: ownProps.username}
         }],
       }),
   }),
@@ -69,11 +83,12 @@ const enrollMutations = graphql(enrollMutation,{
 
 const notEnrollMutations = graphql(notEnrollMutation,{
   props: ({ ownProps, mutate }) => ({
-    notEnroll: () =>
+    notEnroll: ({ id }) =>
       mutate({
         variables: { id },
         refetchQueries: [{
-          query: searchResultQuery
+          query: searchResultQuery,
+		  variables: {searchKey: ownProps.searchKey, username: ownProps.username}
         }],
       }),
   }),

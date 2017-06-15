@@ -1,3 +1,5 @@
-mutation enroll($name:String!){
-	enroll(name:$name)
+mutation enroll($name:String!,$owner:String!){
+	enroll(name:$name,owner:$owner){
+		name
+	}
 }

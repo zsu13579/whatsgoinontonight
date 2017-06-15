@@ -13,6 +13,7 @@ const SearchType = new ObjectType({
     name: { type: new NonNull(StringType) },
     desc: { type: StringType },
     isEnroll: { type: IntType },
+	dbId: { type: StringType },
   },
 });
 

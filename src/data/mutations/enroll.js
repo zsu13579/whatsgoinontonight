@@ -17,7 +17,7 @@ import {
   GraphQLNonNull as NonNull,
 } from 'graphql';
 
-const addFun = {
+const enroll = {
   type: EnrollType,
   args: {
     name: { type: new NonNull(StringType) },
@@ -29,4 +29,4 @@ const addFun = {
   }
 }
 
-export default addFun;
+export default enroll;

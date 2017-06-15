@@ -2,4 +2,6 @@ fragment SearchInfo on Search{
 	id
 	name
 	desc
+	isEnroll
+	dbId
 }

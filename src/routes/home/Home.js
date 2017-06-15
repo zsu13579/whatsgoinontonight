@@ -23,15 +23,15 @@ class Home extends React.Component {
   };
   
   handleSearch = () => {
-	let city = this.cityipt;
-	this.setState({ searchKey:city, showResult: true });
+	let city = this.cityipt.value;
+	this.setState({ searchKey: city, showResult: true });
   };
 
   render() {
     return (
       <div className={s.root}>
         <div className={s.container}>
-          <h1>Where do you want to go</h1>
+          <h1>Where do you want to go tonight</h1>
     		  <Form inline>
       			<FormGroup
       			  controlId="city"
@@ -48,7 +48,7 @@ class Home extends React.Component {
     		  </Form>
     		  { this.state.showResult ?
     		  <SearchResult
-    			searchKey = "{ this.state.searchKey }"
+    			searchKey = {this.state.searchKey}
     		  /> : "" }
         </div>
       </div>

@@ -6,7 +6,7 @@ import {
   GraphQLNonNull as NonNull,
 } from 'graphql';
 
-const deleteFun = {
+const notEnroll = {
   type: StringType,
   args: {
     id: { type: new NonNull(StringType) },
@@ -16,4 +16,4 @@ const deleteFun = {
   }
 }
 
-export default deleteFun;
+export default notEnroll;

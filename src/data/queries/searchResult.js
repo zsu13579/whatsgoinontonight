@@ -20,33 +20,31 @@ const searchResult = {
     city: { type: StringType },
   },
   async resolve(root,args) { 
-    const result = await Enroll.findAll({where: {name: args.name, owner: args.owner}, order: [['createdAt','DESC']]});
+    const enrollResult = await Enroll.findAll({where: { owner: args.owner }, order: [['createdAt','DESC']]});
+	// console.log(enrollResult[0].name);
 	const clientId = 'orAHD13T4VxSfMhAZcHMew';
 	const clientSecret = 'v8c2Znu9b7dPd7urnaY6PDbZYNGyM2REoB8wx1M9OoyP533A2rv6X3HwdWCn5ysX';
     const searchRequest = {
-	  term:'Four Barrel Coffee',
-	  location: 'san francisco, ca'
+	  term:'bar',
+	  location: args.city
 	};
-	// const result2 = await yelp.accessToken(clientId, clientSecret).then(response => {
-	//   const client = yelp.client(response.jsonBody.access_token);
-
-	//   client.search(searchRequest).then(response => {
-	// 	const firstResult = response.jsonBody.businesses[0];
-	// 	const prettyJson = JSON.stringify(firstResult, null, 4);
-	// 	console.log(prettyJson);
-	// 	return prettyJson;
-	//   });
-	// }).catch(e => {
-	//   console.log(e);
-	// });
 
 	const res = await yelp.accessToken(clientId, clientSecret);
 	const client = await yelp.client(res.jsonBody.access_token);
 	const res2 = await client.search(searchRequest);
-	const firstResult = await res2.jsonBody.businesses;
+	const allResult = await res2.jsonBody.businesses;
+	const firstResult = await res2.jsonBody.businesses[0];
 	const prettyJson = await JSON.stringify(firstResult, null, 4);
-	// console.log(prettyJson);
-	return firstResult || [];
+	console.log(prettyJson);
+	allResult.forEach(function(value,index){
+		enrollResult.forEach(function(enrollVal){
+			if(enrollVal.name == value.name){
+				allResult[index].isEnroll=1;
+				allResult[index].dbId=enrollVal.id;
+				}
+		})
+	});
+	return allResult || [];
 
 	// return result2 || [];
   },

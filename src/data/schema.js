@@ -16,15 +16,15 @@ import me from './queries/me';
 import news from './queries/news';
 import searchResult from './queries/searchResult';
 import profile from './queries/profile';
-import addFun from './mutations/addFun';
-import deleteFun from './mutations/deleteFun';
+import enroll from './mutations/enroll';
+import notEnroll from './mutations/notEnroll';
 import uploadAvatar from './mutations/uploadAvatar';
 
 const Mutation = new ObjectType({
   name: 'Mutation',
   fields: {
-    addFun: addFun,
-    deleteFun: deleteFun,
+    enroll: enroll,
+    notEnroll: notEnroll,
     uploadAvatar: uploadAvatar,
   }
 });
