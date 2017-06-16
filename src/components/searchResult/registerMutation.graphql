@@ -1,5 +1,3 @@
 mutation register($username:String!,$password:String!){
-	register(username:$username,password:$password){
-		email
-	}
+	register(username:$username,password:$password)
 }

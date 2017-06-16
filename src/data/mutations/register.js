@@ -1,6 +1,6 @@
 
 import { GraphQLList as List } from 'graphql';
-import { User } from '../models';
+import { User, UserLogin, UserClaim, UserProfile } from '../models';
 import {
   GraphQLObjectType as ObjectType,
   GraphQLString as StringType,

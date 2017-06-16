@@ -16,7 +16,7 @@ import { Alert,Button,Panel,Accordion,Modal,FormGroup,FormControl,ControlLabel,H
 class SearchResult extends React.Component {
   constructor(...args){
     super(...args);
-	this.state = { showModal: false }
+	this.state = { showModal: false,username: this.props.username }
   }
 
   enroll = (e) =>{
@@ -39,7 +39,7 @@ class SearchResult extends React.Component {
   	let password = this.passwordipt.value;
   	this.props.register({username, password}).then((out) =>	
   	{
-  	this.setState({ showModal: false, });
+  	this.setState({ showModal: false, username: username });
   	})
   };
 
@@ -81,7 +81,7 @@ class SearchResult extends React.Component {
 			this.props.searchResult.map(item => (
 			 <h5 className={s.myGallery} key={item.id} >	
 				{item.name}
-				<i onClick={this.props.username ? this.enroll : this.handleReg} id={item.name}> {item.isEnroll || 0}</i>
+				<i onClick={ this.state.username ? this.enroll : this.handleReg } id={item.name}> {item.isEnroll || 0}</i>
 				{item.isEnroll == 1 ? (<i> <i className="fa fa-times" onClick={this.notEnroll} id={item.dbId}></i></i>) : <i></i>}            
 			 </h5>
 			))
@@ -149,8 +149,8 @@ const notEnrollMutations = graphql(notEnrollMutation,{
 
 const registerMutations = graphql(registerMutation,{
   props: ({ ownProps, mutate }) => ({
-    notEnroll: ({ username,password }) =>
-      register({
+    register: ({ username,password }) =>
+      mutate({
         variables: { username,password },
       }),
   }),
