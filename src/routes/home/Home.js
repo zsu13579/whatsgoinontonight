@@ -22,7 +22,8 @@ class Home extends React.Component {
 	this.state = { showResult: false, searchKey: "New York" };
   };
   
-  handleSearch = () => {
+  handleSearch = (e) => {
+	e.preventDefault();
 	let city = this.cityipt.value;
 	this.setState({ searchKey: city, showResult: true });
   };
@@ -32,7 +33,7 @@ class Home extends React.Component {
       <div className={s.root}>
         <div className={s.container}>
           <h1>Where do you want to go tonight</h1>
-    		  <Form inline>
+    		  <Form inline onSubmit={this.handleSearch}>
       			<FormGroup
       			  controlId="city"
       			>

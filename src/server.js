@@ -104,7 +104,7 @@ app.get('/logout',
   (req, res) => {
   // console.log('clearcookielog at server.js');
     res.clearCookie('id_token');
-    res.redirect('/login');
+    res.redirect('/');
   },
 );
 app.post('/register',

@@ -4,16 +4,19 @@ import { graphql, compose } from 'react-apollo';
 import s from './searchResult.css';
 import Link from '../Link';
 import { connect } from 'react-redux';
-import { Image,Glyphicon } from 'react-bootstrap';
 import update from 'immutability-helper';
 import searchResultQuery from './searchResultQuery.graphql';
 import enrollMutation from './enrollMutation.graphql';
 import notEnrollMutation from './notEnrollMutation.graphql';
+import registerMutation from './registerMutation.graphql';
 import Img from 'react-image';
+import { Alert,Button,Panel,Accordion,Modal,FormGroup,FormControl,ControlLabel,HelpBlock,InputGroup,Image,Glyphicon,DropdownButton,MenuItem } from 'react-bootstrap';
+
 
 class SearchResult extends React.Component {
   constructor(...args){
     super(...args);
+	this.state = { showModal: false }
   }
 
   enroll = (e) =>{
@@ -28,19 +31,49 @@ class SearchResult extends React.Component {
   }
   
   handleReg = (e) => {
-  	// let title = this.titleipt.value;
-  	// let url = this.urlipt.value;
-  	// let owner = this.props.username;
-  	// this.props.submit({title, url, owner}).then((out) =>	
-  	// {
-  	// // this.props.data.refetch();	
-  	// this.setState({ showModal: false, });
-  	// })
-	console.log("123")
+  	this.setState({ showModal: true });
+  };
+  
+  handleRegSubmit = (e) => {
+  	let username = this.usernameipt.value;
+  	let password = this.passwordipt.value;
+  	this.props.register({username, password}).then((out) =>	
+  	{
+  	this.setState({ showModal: false, });
+  	})
   };
 
   render() {
+	  
     let { searchKey } = this.props;
+	let close = () => this.setState({ showModal: false});
+	const formInstance = (
+      <form>
+        <FormGroup
+          controlId="username"
+        >
+          <ControlLabel>Username</ControlLabel>
+          <FormControl
+            type="text"
+            placeholder="Enter your name"
+			name="username"
+			inputRef= { ref => { this.usernameipt = ref; }}
+          />
+        </FormGroup>
+        <FormGroup
+          controlId="password"
+        >
+          <ControlLabel>Password</ControlLabel>
+          <FormControl
+            type="text"
+            placeholder="Enter password"
+			name="password"
+			inputRef= { ref => { this.passwordipt = ref; }}
+          />
+        </FormGroup>
+      </form>
+    );
+	
     return (
       <div className={s.root}>
         <div className={s.container}>   		
@@ -53,6 +86,26 @@ class SearchResult extends React.Component {
 			 </h5>
 			))
 		  }	
+		  
+		  <Modal
+            show={this.state.showModal}
+            onHide={close}
+            container={this}
+            aria-labelledby="contained-modal-title"
+          >
+            <Modal.Header closeButton>
+              <Modal.Title id="contained-modal-title">Register</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <Image src={this.state.imgurl} responsive rounded />
+              { formInstance }
+            </Modal.Body>
+            <Modal.Footer>  
+			  <Button bsStyle="primary" onClick={this.handleRegSubmit}>Submit</Button>			
+              <Button onClick={close}>Close</Button>
+            </Modal.Footer>
+          </Modal>
+		  
         </div>
       </div>
     );
@@ -94,6 +147,15 @@ const notEnrollMutations = graphql(notEnrollMutation,{
   }),
 });
 
+const registerMutations = graphql(registerMutation,{
+  props: ({ ownProps, mutate }) => ({
+    notEnroll: ({ username,password }) =>
+      register({
+        variables: { username,password },
+      }),
+  }),
+});
+
 const options = (ownProps) => {
   return {variables: {searchKey: ownProps.searchKey, username: ownProps.username}}
 }
@@ -111,4 +173,5 @@ export default compose(
   withData,
   enrollMutations,
   notEnrollMutations,
+  registerMutations,
 )(SearchResult);
