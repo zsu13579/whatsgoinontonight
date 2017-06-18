@@ -2,6 +2,7 @@ import { GraphQLList as List } from 'graphql';
 import SearchType from '../types/SearchType';
 import { Enroll } from '../models';
 import yelp from 'yelp-fusion';
+// import localStorage from 'localStorage';
 
 import {
   GraphQLObjectType as ObjectType,
@@ -22,6 +23,25 @@ const searchResult = {
   async resolve(root,args) { 
     const enrollResult = await Enroll.findAll({where: { owner: args.owner }, order: [['createdAt','DESC']]});
 	// console.log(enrollResult[0].name);
+
+	// save search info so that when login do not need to search again
+	// try {
+	// localStorage = new LocalStorage('./scratch');
+	// localStorage.setItem('showResult', true);
+	// localStorage.setItem('searchKey', city);
+	// } catch(e) {
+	//   return undefined;
+	// }
+
+	// var localStorage = require('localStorage');
+	// let myVal = { showResult: true, searchKey: 'new york' };
+	// // localStorage.setItem('showResult', true);
+	// // localStorage.setItem('searchKey', 'new york');
+	// localStorage.setItem('myKey', JSON.stringify(myVal));
+	// let searchKey = localStorage.getItem('myKey');
+ //    console.log(searchKey)
+
+	// use yelp api to get bars info
 	const clientId = 'orAHD13T4VxSfMhAZcHMew';
 	const clientSecret = 'v8c2Znu9b7dPd7urnaY6PDbZYNGyM2REoB8wx1M9OoyP533A2rv6X3HwdWCn5ysX';
     const searchRequest = {

@@ -16,12 +16,11 @@ import { Alert,Button,Panel,Accordion,Modal,FormGroup,FormControl,ControlLabel,H
 class SearchResult extends React.Component {
   constructor(...args){
     super(...args);
-	this.state = { showModal: false,username: this.props.username }
+	  this.state = { showModal: false,username: this.props.username }
   }
 
   enroll = (e) =>{
     let name = e.target.id;
-	console.log(name);
     this.props.enroll({ name });
   }
 
@@ -81,7 +80,8 @@ class SearchResult extends React.Component {
 			this.props.searchResult.map(item => (
 			 <h5 className={s.myGallery} key={item.id} >	
 				{item.name}
-				<i onClick={ this.state.username ? this.enroll : this.handleReg } id={item.name}> {item.isEnroll || 0}</i>
+        {this.state.username ? <i onClick={ this.enroll } id={item.name}> {item.isEnroll || 0}</i> : <Link to="/login"> {item.isEnroll || 0}</Link>}
+				
 				{item.isEnroll == 1 ? (<i> <i className="fa fa-times" onClick={this.notEnroll} id={item.dbId}></i></i>) : <i></i>}            
 			 </h5>
 			))

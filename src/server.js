@@ -87,9 +87,20 @@ app.get('/login/github/return',
 app.post('/login', 
   passport.authenticate('local', { failureRedirect: '/login' }),
   (req, res) => {
-	const expiresIn = 60 * 60 * 24 * 180; // 180 days
+	  const expiresIn = 60 * 60 * 24 * 180; // 180 days
     const token = jwt.sign(req.user, auth.jwt.secret, { expiresIn });
     res.cookie('id_token', token, { maxAge: 1000 * expiresIn, httpOnly: true });  
+    res.redirect('/');
+  });
+app.post('/loginSearch/', 
+  passport.authenticate('local', { failureRedirect: '/login' }),
+  (req, res) => {
+    const expiresIn = 60 * 60 * 24 * 180; // 180 days
+    const token = jwt.sign(req.user, auth.jwt.secret, { expiresIn });
+    const searchKey=req.body.searchKey;
+    res.cookie('id_token', token, { maxAge: 1000 * expiresIn, httpOnly: true });  
+    res.cookie('showResult', true, { maxAge: 1000 * expiresIn, httpOnly: true });  
+    res.cookie('searchKey', searchKey, { maxAge: 1000 * expiresIn, httpOnly: true });  
     res.redirect('/');
   });
 app.get('/logout',
@@ -230,6 +241,8 @@ app.get('*', async (req, res, next) => {
 
     const store = configureStore({
       user: req.user || null,
+      showResult: req.showResult || null,
+      searchKey: req.searchKey || null,
     }, {
       cookie: req.headers.cookie,
       apolloClient,
