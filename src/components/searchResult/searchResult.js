@@ -12,7 +12,6 @@ import registerMutation from './registerMutation.graphql';
 import Img from 'react-image';
 import { Alert,Button,Panel,Accordion,Modal,FormGroup,FormControl,ControlLabel,HelpBlock,InputGroup,Image,Glyphicon,DropdownButton,MenuItem } from 'react-bootstrap';
 
-
 class SearchResult extends React.Component {
   constructor(...args){
     super(...args);
@@ -75,7 +74,9 @@ class SearchResult extends React.Component {
 	
     return (
       <div className={s.root}>
-        <div className={s.container}>   		
+        <div className={s.container}>   
+		 <h1></h1>
+		  <h3>{this.props.showResult==true ? 1 : 2}</h3>		  
 		  { 
 			this.props.searchResult.map(item => (
 			 <h5 className={s.myGallery} key={item.id} >	
@@ -116,9 +117,10 @@ function mapStateToProps(state) {
   if(state.user){
     return {
       username: state.user.email,
+	  showResult: state.runtime.showResult,
     }
   }
-  return {}
+  return { showResult: state.showResult }
 }
 
 const enrollMutations = graphql(enrollMutation,{

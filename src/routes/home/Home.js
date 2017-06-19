@@ -6,16 +6,18 @@ import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import s from './Home.css';
 import { Alert,Form,Button,Panel,Accordion,Modal,FormGroup,FormControl,ControlLabel,HelpBlock,InputGroup,Image,Glyphicon,DropdownButton,MenuItem } from 'react-bootstrap';
 import SearchResult from '../../components/searchResult';
-// import { LocalStorage } from 'node-localstorage';
-// import localStorage from 'localStorage';
+import { connect } from 'react-redux';
+import { setRuntimeVariable } from '../../actions/runtime';
 
 class Home extends React.Component {
 
   constructor(...args) {
     super(...args);
-    let showResult = false;
-    let searchKey = "";
-    
+    let showResult = this.props.showResult;
+	let searchKey;
+	console.log(this.props.searchKey);
+	this.props.searchKey ? searchKey = this.props.searchKey : searchKey = "new York" ;
+
     // try {
     // let localStorage = new LocalStorage('./scratch');
     // showResult = localStorage.getItem('showResult');
@@ -36,13 +38,13 @@ class Home extends React.Component {
     // console.log(myKey)
     // console.log(showResult)
 
-    var localStorage = require('localStorage')
-      , myValue = { foo: 'bar', baz: 'quux' }
-      ;
+    // var localStorage = require('localStorage')
+      // , myValue = { foo: 'bar', baz: 'quux' }
+      // ;
 
-    localStorage.setItem('myKey', JSON.stringify(myValue));
-    let myValue2 = localStorage.getItem('myKey');
-    console.log(myValue2);
+    // localStorage.setItem('myKey', JSON.stringify(myValue));
+    // let myValue2 = localStorage.getItem('myKey');
+    // console.log(myValue2);
 
    
     // let localStorage = new LocalStorage('./scratch');
@@ -64,6 +66,7 @@ class Home extends React.Component {
 	let city = this.cityipt.value;
   // localStorage.setItem('showResult', true);
   // localStorage.setItem('searchKey', city);
+	this.props.setCity(city);
 	this.setState({ searchKey: city, showResult: true });
   };
 
@@ -96,6 +99,33 @@ class Home extends React.Component {
   }
 }
 
+function mapStateToProps(state) {
+  if(state.user){
+    return {
+      username: state.user.email,
+	  showResult: state.runtime.showResult,
+	  searchKey: state.runtime.searchKey,
+    }
+  }
+  return { showResult: state.runtime.showResult, searchKey: state.runtime.searchKey}
+}
+
+function mapDispatch(dispatch,ownProps) {
+  return {
+	  setCity: (city) => {
+	  dispatch(setRuntimeVariable({
+      name: 'showResult',
+      value: true,
+		}));
+	  dispatch(setRuntimeVariable({
+      name: 'searchKey',
+      value: city,
+		}));	
+	}
+  }
+}
+
 export default compose(
   withStyles(s),
+  connect(mapStateToProps,mapDispatch),
 )(Home);

@@ -89,7 +89,10 @@ app.post('/login',
   (req, res) => {
 	  const expiresIn = 60 * 60 * 24 * 180; // 180 days
     const token = jwt.sign(req.user, auth.jwt.secret, { expiresIn });
+    const searchKey=req.body.searchKey;
     res.cookie('id_token', token, { maxAge: 1000 * expiresIn, httpOnly: true });  
+    res.cookie('showResult', true, { maxAge: 1000 * expiresIn, httpOnly: true });  
+    res.cookie('searchKey', searchKey, { maxAge: 1000 * expiresIn, httpOnly: true });  
     res.redirect('/');
   });
 app.post('/loginSearch/', 
@@ -241,17 +244,22 @@ app.get('*', async (req, res, next) => {
 
     const store = configureStore({
       user: req.user || null,
-      showResult: req.showResult || null,
-      searchKey: req.searchKey || null,
+      showResult: req.cookies.showResult || null,
+      searchKey: req.cookies.searchKey || null,
     }, {
       cookie: req.headers.cookie,
       apolloClient,
     });
-
+	// console.log(req.cookies.showResult);
     store.dispatch(setRuntimeVariable({
       name: 'initialNow',
       value: Date.now(),
     }));
+	
+	// store.dispatch(setRuntimeVariable({
+      // name: 'showResult',
+      // value: req.cookies.showResult,
+    // }));
 
     const css = new Set();
 

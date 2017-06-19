@@ -7,11 +7,12 @@ export default {
 
   path: '/',
   
-  async action() {
-
+  async action( {store} ) {
+	
+	// console.log(store.getState().runtime.showResult);
     return {
       title: 'Welcome Nightelfs',
-      component: <Layout><Home showResult /></Layout>,
+      component: <Layout><Home /></Layout>,
     };
   },
 
