@@ -11,6 +11,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import s from './Login.css';
+import { connect } from 'react-redux';
+import { setRuntimeVariable } from '../../actions/runtime';
+import { graphql, compose } from 'react-apollo';
 
 class Login extends React.Component {
   static propTypes = {
@@ -21,6 +24,7 @@ class Login extends React.Component {
     return (
       <div className={s.root}>
         <div className={s.container}>
+        <h1>{this.props.searchKey}</h1>
           <h1>{this.props.title}</h1>
           <p className={s.lead}>Log in with your username or company email address.</p>
           <div className={s.formGroup}>
@@ -127,4 +131,23 @@ class Login extends React.Component {
   }
 }
 
-export default withStyles(s)(Login);
+function mapStateToProps(state) {
+  if(state.user){
+    return {
+      username: state.user.email,
+    showResult: state.runtime.showResult,
+    searchKey: state.runtime.searchKey,
+    }
+  }
+  return { showResult: state.runtime.showResult, searchKey: state.runtime.searchKey}
+}
+
+function mapDispatch(dispatch,ownProps) {
+  return {
+  }
+}
+
+export default compose(
+  withStyles(s),
+  connect(mapStateToProps,mapDispatch),
+)(Login);

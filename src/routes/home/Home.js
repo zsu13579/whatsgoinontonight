@@ -14,9 +14,9 @@ class Home extends React.Component {
   constructor(...args) {
     super(...args);
     let showResult = this.props.showResult;
-	let searchKey;
-	console.log(this.props.searchKey);
-	this.props.searchKey ? searchKey = this.props.searchKey : searchKey = "new York" ;
+  	let searchKey;
+  	console.log(this.props.searchKey);
+  	this.props.searchKey ? searchKey = this.props.searchKey : searchKey = "new York" ;
 
     // try {
     // let localStorage = new LocalStorage('./scratch');

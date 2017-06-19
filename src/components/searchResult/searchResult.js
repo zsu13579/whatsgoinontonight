@@ -75,13 +75,13 @@ class SearchResult extends React.Component {
     return (
       <div className={s.root}>
         <div className={s.container}>   
-		 <h1></h1>
+		  <h1></h1>
 		  <h3>{this.props.showResult==true ? 1 : 2}</h3>		  
 		  { 
 			this.props.searchResult.map(item => (
 			 <h5 className={s.myGallery} key={item.id} >	
 				{item.name}
-        {this.state.username ? <i onClick={ this.enroll } id={item.name}> {item.isEnroll || 0}</i> : <Link to="/login"> {item.isEnroll || 0}</Link>}
+        {this.state.username ? <i onClick={ this.enroll } id={item.name}> {item.isEnroll || 0}</i> : <Link to="/login/" > {item.isEnroll || 0}</Link>}
 				
 				{item.isEnroll == 1 ? (<i> <i className="fa fa-times" onClick={this.notEnroll} id={item.dbId}></i></i>) : <i></i>}            
 			 </h5>

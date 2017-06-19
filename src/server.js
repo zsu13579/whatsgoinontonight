@@ -95,6 +95,7 @@ app.post('/login',
     res.cookie('searchKey', searchKey, { maxAge: 1000 * expiresIn, httpOnly: true });  
     res.redirect('/');
   });
+
 app.post('/loginSearch/', 
   passport.authenticate('local', { failureRedirect: '/login' }),
   (req, res) => {
