@@ -71,8 +71,18 @@ app.get('/login/facebook/return',
   },
 );
 
-app.get('/login/github',
-  passport.authenticate('github')
+app.get('/login/github/',  
+  (req, res, next) => {
+	// set cookie to remembeer the searchKey and showResult state of the user
+	// before coming to this request
+	// so that user need not to search again after login 
+	const expiresIn = 60 * 60 * 24 * 180; // 180 days
+    const searchKey=req.query.city;
+    res.cookie('showResult', true, { maxAge: 1000 * expiresIn, httpOnly: true });  
+    res.cookie('searchKey', searchKey, { maxAge: 1000 * expiresIn, httpOnly: true });
+	next();
+  },
+  passport.authenticate('github'),
 );
 app.get('/login/github/return',
   passport.authenticate('github', { failureRedirect: '/login', session: false }),
@@ -87,29 +97,20 @@ app.get('/login/github/return',
 app.post('/login', 
   passport.authenticate('local', { failureRedirect: '/login' }),
   (req, res) => {
-	  const expiresIn = 60 * 60 * 24 * 180; // 180 days
+	const expiresIn = 60 * 60 * 24 * 180; // 180 days
     const token = jwt.sign(req.user, auth.jwt.secret, { expiresIn });
     const searchKey=req.body.searchKey;
     res.cookie('id_token', token, { maxAge: 1000 * expiresIn, httpOnly: true });  
+	// set cookie to remembeer the searchKey and showResult state of the user
+	// before coming to this request
+	// so that user need not to search again after login 
     res.cookie('showResult', true, { maxAge: 1000 * expiresIn, httpOnly: true });  
     res.cookie('searchKey', searchKey, { maxAge: 1000 * expiresIn, httpOnly: true });  
     res.redirect('/');
   });
 
-app.post('/loginSearch/', 
-  passport.authenticate('local', { failureRedirect: '/login' }),
-  (req, res) => {
-    const expiresIn = 60 * 60 * 24 * 180; // 180 days
-    const token = jwt.sign(req.user, auth.jwt.secret, { expiresIn });
-    const searchKey=req.body.searchKey;
-    res.cookie('id_token', token, { maxAge: 1000 * expiresIn, httpOnly: true });  
-    res.cookie('showResult', true, { maxAge: 1000 * expiresIn, httpOnly: true });  
-    res.cookie('searchKey', searchKey, { maxAge: 1000 * expiresIn, httpOnly: true });  
-    res.redirect('/');
-  });
 app.get('/logout',
   (req, res) => {
-  // console.log('clearcookielog at server.js');
     res.clearCookie('id_token');
     res.redirect('/');
   },
@@ -251,16 +252,26 @@ app.get('*', async (req, res, next) => {
       cookie: req.headers.cookie,
       apolloClient,
     });
-	// console.log(req.cookies.showResult);
+
     store.dispatch(setRuntimeVariable({
       name: 'initialNow',
       value: Date.now(),
     }));
 	
-	// store.dispatch(setRuntimeVariable({
-      // name: 'showResult',
-      // value: req.cookies.showResult,
-    // }));
+	// get searchKey and showResult state from cookie 
+	// and dispatch them to runtime variables
+	// so that user need not need to search again when login 
+	store.dispatch(setRuntimeVariable({
+      name: 'showResult',
+      value: req.cookies.showResult,
+    }));	
+	store.dispatch(setRuntimeVariable({
+      name: 'searchKey',
+      value: req.cookies.searchKey,
+    }));
+	
+	res.clearCookie('showResult');
+	res.clearCookie('searchKey');
 
     const css = new Set();
 

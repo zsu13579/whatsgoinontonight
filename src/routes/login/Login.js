@@ -24,11 +24,10 @@ class Login extends React.Component {
     return (
       <div className={s.root}>
         <div className={s.container}>
-        <h1>{this.props.searchKey}</h1>
           <h1>{this.props.title}</h1>
           <p className={s.lead}>Log in with your username or company email address.</p>
           <div className={s.formGroup}>
-            <a className={s.github} href="/login/github">
+            <a className={s.github} href={"/login/github?city=" + this.props.searchKey}>
               <i className="fa fa-github"> </i>&nbsp;&nbsp;			  
               <span>Log in with Github</span>
             </a>
@@ -117,6 +116,14 @@ class Login extends React.Component {
                 id="password"
                 type="password"
                 name="password"
+              />
+            </div>
+			<div className={s.formGroup}>
+              <input
+                className={s.input}
+                value={this.props.searchKey}
+                type="hidden"
+                name="searchKey"
               />
             </div>
             <div className={s.formGroup}>

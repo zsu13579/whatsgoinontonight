@@ -75,8 +75,7 @@ class SearchResult extends React.Component {
     return (
       <div className={s.root}>
         <div className={s.container}>   
-		  <h1></h1>
-		  <h3>{this.props.showResult==true ? 1 : 2}</h3>		  
+		  <h1></h1>	  
 		  { 
 			this.props.searchResult.map(item => (
 			 <h5 className={s.myGallery} key={item.id} >	

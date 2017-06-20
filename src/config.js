@@ -29,14 +29,14 @@ export const auth = {
 
   // https://developer.github.com/apps/building-integrations/setting-up-and-registering-oauth-apps/
   github: {
-    id: process.env.GITHUB_APP_ID || '7feef83588b1de410423',
-    secret: process.env.GITHUB_APP_SECRET || 'cd202a3e9b36b7a300eb39af0d97e350409eaa4a',
+    id: process.env.GITHUB_APP_ID || '73d600949492edaff06b',
+    secret: process.env.GITHUB_APP_SECRET || '30a83b0b221d56407818998d436a9bc2321085d5',
   },
   
   // https://developers.facebook.com/
   facebook: {
     id: process.env.FACEBOOK_APP_ID || '186244551745631',
-    secret: process.env.FACEBOOK_APP_SECRET || 'a970ae3240ab4b9b8aae0f9f0661c6fc',
+    secret: process.env.FACEBOOK_APP_SECRET || '30a83b0b221d56407818998d436a9bc2321085d5',
   },
 
   // https://cloud.google.com/console/project
