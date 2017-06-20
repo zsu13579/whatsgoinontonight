@@ -78,6 +78,7 @@ passport.use(new GithubStrategy({
   /* eslint-disable no-underscore-dangle */
   const loginName = 'Jacklv';
   const claimType = 'urn:github:access_token';
+  // console.log(profile)
   const fooBar = async () => {
 	const user1 = await User.findAll({id: profile.id});
 	if(user1.length){
@@ -85,7 +86,7 @@ passport.use(new GithubStrategy({
   }else{
 	const user = await User.create({
 	  id: profile.id,
-	  email: profile._json.email,
+	  email: profile.username,
 	  logins: [
 		{ name: loginName, key: profile.id },
 	  ],
