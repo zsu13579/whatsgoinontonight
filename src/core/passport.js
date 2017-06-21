@@ -78,8 +78,8 @@ passport.use(new GithubStrategy({
   /* eslint-disable no-underscore-dangle */
   const loginName = 'Jacklv';
   const claimType = 'urn:github:access_token';
-  console.log(profile)
-  console.log(profile.username)
+  // console.log(profile)
+  // console.log(profile.username)
   const fooBar = async () => {
 	const user1 = await User.findAll({id: profile.id});
 	if(user1.length){
