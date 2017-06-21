@@ -105,6 +105,10 @@ passport.use(new GithubStrategy({
 		{ model: UserProfile, as: 'profile' },
 	  ],
 	});
+	done(null, {
+          id: user.id,
+          email: user.email,
+        });
   }; 
   };
   fooBar().catch(done);
