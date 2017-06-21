@@ -20,13 +20,15 @@ class Navigation extends React.Component {
     return username ? (
       <div className={s.root} role="navigation">
 		<Link className={s.link} to="/">Home</Link>
+		<Link className={s.link} to="/dashboard">Dashboard</Link>
         <Link className={s.link} to="/profile"><i className="fa fa-cog fa-fw" aria-hidden="true"></i></Link>
         <a className={s.link} href="/logout"><i className="fa fa-sign-out fa-fw" aria-hidden="true"></i></a>    
       </div>
     ) : 
   (
       <div className={s.root} role="navigation">
-      <Link className={s.link} to="/">Home</Link>
+        <Link className={s.link} to="/">Home</Link>
+	    <Link className={s.link} to="/dashboard">Dashboard</Link>
         <Link className={s.link} to="/login">Log in</Link>
         <span className={s.spacer}>or</span>
         <Link className={cx(s.link, s.highlight)} to="/register">Sign up</Link>
