@@ -23,6 +23,7 @@ export default {
     require('./yourwins').default,
     require('./profile').default,
     require('./privacy').default,
+	require('./dashboard').default,
     require('./admin').default,
 
     // Wildcard routes, e.g. { path: '*', ... } (must go last)

@@ -1,11 +1,3 @@
-/**
- * React Starter Kit (https://www.reactstarterkit.com/)
- *
- * Copyright © 2014-present Kriasoft, LLC. All rights reserved.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE.txt file in the root directory of this source tree.
- */
 
 import React from 'react';
 import PropTypes from 'prop-types';
@@ -45,6 +37,8 @@ class Html extends React.Component {
           <link rel="apple-touch-icon" href="apple-touch-icon.png" />
 		  <link rel="stylesheet" href="/css/bootstrap.min.css" />
 		  <link rel="stylesheet" href="/css/font-awesome.min.css" />
+		  <link rel="stylesheet" href="/css/react-grid-layout.css" />
+		  <link rel="stylesheet" href="/css/resizable.css" />		  
           {styles.map(style =>
             <style
               key={style.id}

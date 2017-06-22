@@ -1,7 +1,7 @@
 
 import {
   GraphQLObjectType as ObjectType,
-  GraphQLString as StringType,
+  GraphQLString as IntType,
   GraphQLNonNull as NonNull,
   GraphQLList as List
 } from 'graphql';
@@ -9,7 +9,8 @@ import {
 const GdpType = new ObjectType({
   name: 'Gdp',
   fields: {
-    value: { type: new List(StringType) },
+    xData: { type: new List(IntType) },
+	sData: { type: new List(IntType) },
   },
 });
 

@@ -6,40 +6,26 @@ import GdpType from '../types/GdpType';
 // gdp data
 const url = 'https://raw.githubusercontent.com/FreeCodeCamp/ProjectReferenceData/master/GDP-data.json';
 
-let items = [];
+let items = {xData: [],sData: []};
 let lastFetchTask;
-let lastFetchTime = new Date(1970, 0, 1);
 
 const gdp = {
-  type: new List(GdpType),
-  resolve() {
-    if (lastFetchTask) {
-      return lastFetchTask;
-    }
+  type: GdpType,
+  async resolve() {
 
-    if ((new Date() - lastFetchTime) > 1000 * 60 * 10 /* 10 mins */) {
-      lastFetchTime = new Date();
-      lastFetchTask = fetch(url)
+      lastFetchTask = await fetch(url)
         .then(response => response.json())
-        .then((data) => {
-          if (data.status === 'ok') {
-            items = data.data;
-          }
-
-          return items;
+        .then((res) => {
+		  res.data.forEach(function(value,index,arr){
+			  items.xData.push(value[0]);
+			  items.sData.push(value[1]);
+		  })
         })
         .finally(() => {
           lastFetchTask = null;
         });
 
-      if (items.length) {
-        return items;
-      }
-
-      return lastFetchTask;
-    }
-
-    return items;
+	return items;
   },
 };
 
