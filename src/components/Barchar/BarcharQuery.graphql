@@ -1,0 +1,6 @@
+#import "./searchResultFragment.graphql"
+query ($username: String, $searchKey: String){
+  searchResult(owner:$username, city:$searchKey) {
+	...SearchInfo
+  }
+}	

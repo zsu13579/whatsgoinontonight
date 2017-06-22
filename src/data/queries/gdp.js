@@ -6,12 +6,12 @@ import GdpType from '../types/GdpType';
 // gdp data
 const url = 'https://raw.githubusercontent.com/FreeCodeCamp/ProjectReferenceData/master/GDP-data.json';
 
-let items = {xData: [],sData: []};
-let lastFetchTask;
-
 const gdp = {
   type: GdpType,
   async resolve() {
+
+      let items = {xData: [],sData: []};
+      let lastFetchTask;
 
       lastFetchTask = await fetch(url)
         .then(response => response.json())

@@ -1,0 +1,6 @@
+{
+  "name": "Barchar",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./Barchar.js"
+}
