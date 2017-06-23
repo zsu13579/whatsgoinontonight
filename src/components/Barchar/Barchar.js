@@ -1,60 +1,79 @@
-/**
- * React Starter Kit (https://www.reactstarterkit.com/)
- *
- * Copyright © 2014-present Kriasoft, LLC. All rights reserved.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE.txt file in the root directory of this source tree.
- */
-
 import React from 'react';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import { graphql, compose } from 'react-apollo';
 import s from './Barchar.css';
 import Link from '../Link';
 import { connect } from 'react-redux';
-import { Image,Glyphicon } from 'react-bootstrap';
 import update from 'immutability-helper';
-import BarcharQuery from './BarcharQuery.graphql';
-import Img from 'react-image';
+// import BarcharQuery from './BarcharQuery.graphql';
+import ECharts from 'react-echarts';
+import echarts from 'echarts';
 
 class Barchar extends React.Component {
+  
+  static defaultProps = {
+    notMerge: false,
+    notRefreshImmediately: false,
+    style: {},
+  };  
+	
   constructor(...args){
     super(...args);
   }
-
-  addLike = (e) =>{
-    let id = e.target.id;
-    let addtype = "LIKE_TYPE";
-    this.props.addLike({id, addtype});
+  
+  componentDidMount() {
+	this.init();
+	
+  }
+  
+  componentDidUpdate() {
+    this.setOption();
+  }
+  
+  componentWillUnmount() {
+    this.dispose();
+  }
+  
+  getInstance() {
+    return this.chart;
+  }  
+  
+  setOption() {
+    let {
+      option,
+      notMerge,
+      notRefreshImmediately,
+      } = this.props;
+    if (option) {
+      this.chart.showLoading();
+      this.chart.setOption(option, notMerge, notRefreshImmediately);
+      this.chart.hideLoading();
+	  this.chart.resize();
+    }
+  }
+  
+  init() {
+    this.chart = echarts.init(this.refs.container);
+    this.setOption();
   }
 
-  addNotLike = (e) =>{
-    let id = e.target.id;
-    let addtype = "NOT_LIKE_TYPE";
-    this.props.addLike({id, addtype});
-  }
-
-  deleteWin = (e) => {
-    let id = e.target.id;
-    this.props.deleteWin({ id });
+  dispose() {
+    if (this.chart) {
+      this.chart.dispose();
+      this.chart = null;
+    }
   }
 
   render() {
-    let { id , imgurl, title, owner, like, notlike, deleteFlag } = this.props;
+    const { option, width, height, style } = this.props;
+	const newStyle = Object.assign({
+      width: '100%',
+      height: '100%',
+    }, style);
+		
     return (
       <div className={s.root}>
-        <div className={s.container}>
-      
-          <ResponsiveReactGridLayout className="layout" layouts={this.state.layouts} onLayoutChange={this.onLayoutChange}
-            breakpoints={{lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0}}
-            cols={{lg: 12, md: 10, sm: 6, xs: 4, xxs: 2}}>
-            <div key={'d'} className={s.echarts} data-grid={{x: 4, y: 0, w: this.state.width, h: 2}} >  
-              <ECharts option={option}/>
-            </div>
-          </ResponsiveReactGridLayout>
-	
-        </div>
+        <div ref="container" style={newStyle}></div>
       </div>
     );
   }
@@ -69,38 +88,6 @@ function mapStateToProps(state) {
   return {}
 }
 
-const addLikeMutations = graphql(addLikeMutation,{
-  props: ({ ownProps, mutate }) => ({
-    addLike: ({ id,addtype }) =>
-      mutate({
-        variables: { id,addtype },
-        refetchQueries: [{
-          query: recentwinsQuery
-        }],
-      }),
-  }),
-});
-
-const deleteWinMutations = graphql(deleteWinMutation,{
-  props: ({ ownProps, mutate }) => ({
-    deleteWin: ({ id }) =>
-      mutate({
-        variables: { id },
-        refetchQueries: [{
-          query: recentwinsQuery,
-          },
-          {
-          query: yourwinsQuery,
-          variables: { username: ownProps.username}
-          },
-        ],
-      }),
-  }),
-});
-
 export default compose(
   withStyles(s),
-  connect(mapStateToProps),
-  addLikeMutations,
-  deleteWinMutations,
 )(Barchar);
