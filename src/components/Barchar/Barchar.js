@@ -6,7 +6,7 @@ import Link from '../Link';
 import { connect } from 'react-redux';
 import update from 'immutability-helper';
 // import BarcharQuery from './BarcharQuery.graphql';
-import ECharts from 'react-echarts';
+// import ECharts from 'react-echarts';
 import echarts from 'echarts';
 
 class Barchar extends React.Component {
