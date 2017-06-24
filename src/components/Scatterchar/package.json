@@ -1,0 +1,6 @@
+{
+  "name": "Scatterchar",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./Scatterchar.js"
+}

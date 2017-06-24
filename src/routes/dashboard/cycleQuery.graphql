@@ -1,0 +1,12 @@
+{
+  cycle {
+	Name,
+	Time,
+	Place,
+	Seconds,
+	Nationality,
+	Doping,
+	URL,
+	Year
+  }
+}

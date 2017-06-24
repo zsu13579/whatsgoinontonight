@@ -8,6 +8,7 @@ import news from './queries/news';
 import searchResult from './queries/searchResult';
 import profile from './queries/profile';
 import gdp from './queries/gdp';
+import cycle from './queries/cycle';
 import enroll from './mutations/enroll';
 import notEnroll from './mutations/notEnroll';
 import uploadAvatar from './mutations/uploadAvatar';
@@ -31,7 +32,8 @@ const schema = new Schema({
       news,
 	    searchResult,
       profile,
-	  gdp,
+	    gdp,
+      cycle,
     },
   }),
   mutation: Mutation,
