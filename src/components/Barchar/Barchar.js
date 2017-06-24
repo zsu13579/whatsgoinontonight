@@ -48,7 +48,7 @@ class Barchar extends React.Component {
       this.chart.showLoading();
       this.chart.setOption(option, notMerge, notRefreshImmediately);
       this.chart.hideLoading();
-	  this.chart.resize();
+	    this.chart.resize();
     }
   }
   
@@ -65,16 +65,14 @@ class Barchar extends React.Component {
   }
 
   render() {
-    const { option, width, height, style } = this.props;
-	const newStyle = Object.assign({
-      width: '100%',
-      height: '100%',
-    }, style);
+    const { style } = this.props;
+  	const newStyle = Object.assign({
+        width: '100%',
+        height: '100%',
+      }, style);
 		
     return (
-      <div className={s.root}>
-        <div ref="container" style={newStyle}></div>
-      </div>
+        <div ref="container" className={s.root} style={newStyle}></div>
     );
   }
 }

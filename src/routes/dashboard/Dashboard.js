@@ -16,11 +16,11 @@ class Dashboard extends React.Component {
 	super(...args);
 
 	let layouts = {lg: [
-      {i: 'a', x: 0, y: 0, w: 1, h: 2, static: true},
-      {i: 'b', x: 1, y: 0, w: 3, h: 2, minW: 2, maxW: 4},
+      {i: 'a', x: 0, y: 0, w: 5, h: 2, static: true},
+      {i: 'b', x: 1, y: 0, w: 8, h: 2, minW: 2, maxW: 16},
       {i: 'd', x: 4, y: 0, w: 10, h: 3}
 	]}
-    this.state = {layouts: layouts, height: 3};
+    this.state = {layouts: layouts};
   }
 
   static propTypes = {
@@ -29,12 +29,14 @@ class Dashboard extends React.Component {
   };
 
     onLayoutChange = (layout) => {
-   //    console.log(layout)
+
 	  let layouts = this.state.layouts;
-	  layouts.lg[2].w = layout[0].w;
-	  layouts.lg[2].h = layout[0].h;
-	  let height = layout[0].h;
-	  this.setState({layouts: layouts, height: height})
+	  layouts.lg.forEach(function(item,index,arr){
+	  	layouts.lg[index].w = layout[index].w;
+	  	layouts.lg[index].h = layout[index].h;
+	  })
+	  
+	  this.setState({layouts: layouts})
     };
 
   render() {	
@@ -48,8 +50,8 @@ class Dashboard extends React.Component {
       return (<div>An unexpected error occurred</div>)
 	}	
 
-	const option = {
-		title: { text: 'Gross Domestic Product', left: 'center', top:'10px'},
+	const optiond = {
+		title: { text: 'Gross Domestic Productd', left: 'center', top:'10px'},
 		tooltip: {},
 		xAxis: {
 			data: this.props.gdp.xData
@@ -62,6 +64,33 @@ class Dashboard extends React.Component {
 		}]
 		};
 
+	const optionb = {
+		title: { text: 'Gross Domestic Productb', left: 'center', top:'10px'},
+		tooltip: {},
+		xAxis: {
+			data: this.props.gdp.xData
+		},
+		yAxis: {},
+		series: [{
+			name: '销量',
+			type: 'bar',
+			data: this.props.gdp.sData
+		}]
+		};	
+
+	const optiona = {
+		title: { text: 'Gross Domestic Producta', left: 'center', top:'10px'},
+		tooltip: {},
+		xAxis: {
+			data: this.props.gdp.xData
+		},
+		yAxis: {},
+		series: [{
+			name: '销量',
+			type: 'bar',
+			data: this.props.gdp.sData
+		}]
+		};	
     return (
 	<div className={s.root}>
 		<div className={s.container}>
@@ -70,10 +99,15 @@ class Dashboard extends React.Component {
 			  breakpoints={{lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0}}
 			  cols={{lg: 12, md: 10, sm: 6, xs: 4, xxs: 2}}
 			  >
-				<div key={'d'} className={s.echarts} > 
-				  <Barchar option={option} style={{height:this.state.height*120	}} />
+				<div key={'a'} className={s.echarts} > 
+				  <Barchar option={optiona} />
 				</div>
-				<div key={'b'}>b</div>	
+				<div key={'b'} className={s.echarts} > 
+				  <Barchar option={optionb} />
+				</div>
+				<div key={'d'} className={s.echarts} > 
+				  <Barchar option={optiond} />
+				</div>
 			</ResponsiveReactGridLayout>
 
 		</div>
