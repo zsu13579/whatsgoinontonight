@@ -9,6 +9,7 @@ import searchResult from './queries/searchResult';
 import profile from './queries/profile';
 import gdp from './queries/gdp';
 import cycle from './queries/cycle';
+import meteoriteStrike from './queries/meteoriteStrike';
 import enroll from './mutations/enroll';
 import notEnroll from './mutations/notEnroll';
 import uploadAvatar from './mutations/uploadAvatar';
@@ -34,6 +35,7 @@ const schema = new Schema({
       profile,
 	    gdp,
       cycle,
+      meteoriteStrike,
     },
   }),
   mutation: Mutation,

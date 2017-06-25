@@ -1,0 +1,12 @@
+{
+  meteoriteStrike {
+    name,
+    coordinates,
+    fall,
+  	mass,
+  	nameType,
+  	recclass,
+  	reclat,
+  	year,
+  }
+}

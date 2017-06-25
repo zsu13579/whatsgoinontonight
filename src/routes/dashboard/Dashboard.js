@@ -5,10 +5,12 @@ import { graphql, compose } from 'react-apollo';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import gdpQuery from './gdpQuery.graphql';
 import cycleQuery from './cycleQuery.graphql';
+import meteoriteStrikeQuery from './meteoriteStrikeQuery.graphql';
 import s from './Dashboard.css';
 import Barchar from '../../components/Barchar';
 // import ECharts from 'react-echarts';
 import echarts from 'echarts';
+import world from 'echarts/map/js/world';
 import {Responsive, WidthProvider} from 'react-grid-layout';
 const ResponsiveReactGridLayout = WidthProvider(Responsive);
 
@@ -19,7 +21,7 @@ class Dashboard extends React.Component {
 
 	let layouts = {lg: [
       {i: 'a', x: 0, y: 0, w: 5, h: 2, static: true},
-      {i: 'b', x: 1, y: 0, w: 8, h: 2, minW: 2, maxW: 16},
+      {i: 'b', x: 1, y: 0, w: 10, h: 4, minW: 2, maxW: 16},
       {i: 'd', x: 4, y: 0, w: 10, h: 3}
 	]}
     this.state = {layouts: layouts};
@@ -244,19 +246,119 @@ class Dashboard extends React.Component {
 	    }]
 	};
 
+	// world map option
+	// convert data to [name:name,value:[coordinates1,coordinates2,size]]
+	const convertData = function (data) {
+	    let res = [];
+	    for (let i = 0; i < data.length; i++) {
+	    	let mass = data[i].mass;
+	    	let value = data[i].coordinates.concat(mass)
+	    				.concat(data[i].fall)
+	    				.concat(data[i].nameType)
+	    				.concat(data[i].recclass)
+	    				.concat(data[i].reclat)
+	    				.concat(data[i].year)
+	    				;
+            res.push({
+                name: data[i].name,
+                value: value,
+                fall: data[i].fall,
+                mass: data[i].mass,
+                nameType: data[i].nameType,
+                recclass: data[i].recclass,
+                reclat: data[i].reclat,
+                year: data[i].year
+            });
+	    }
+	    return res;
+	};
+
 	const optionb = {
-		title: { text: 'Gross Domestic Productb', left: 'center', top:'10px'},
-		tooltip: {},
-		xAxis: {
-			data: this.props.gdp.xData
-		},
-		yAxis: {},
-		series: [{
-			name: '销量',
-			type: 'bar',
-			data: this.props.gdp.sData
-		}]
-		};	
+	    backgroundColor: '#404a59',
+	    title: {
+	        text: 'Meteorite-Strike',
+	        x:'center',
+	        textStyle: {
+	            color: '#fff'
+	        }
+	    },
+	    tooltip: {
+	        trigger: 'item',
+	        formatter: function (params) {
+	            return 'fall' + ' : ' + params.value[3] + '<br>'
+	            + 'mass' + ' : ' + params.value[2] + '<br>'
+	            + 'name' + ' : ' + params.name + '<br>'
+	            + 'nameType' + ' : ' + params.value[4] + '<br>'
+	            + 'recclass' + ' : ' + params.value[5] + '<br>'
+	            + 'reclat' + ' : ' + params.value[6] + '<br>'
+	            + 'year' + ' : ' + params.value[7] + '<br>'
+	            ;
+	        }
+	    },
+	    legend: {
+	        orient: 'vertical',
+	        y: 'bottom',
+	        x:'right',
+	        data:['meteoriteStrike'],
+	        textStyle: {
+	            color: '#fff'
+	        }
+	    },
+	    visualMap: {
+	        min: 0,
+	        max: 2000000,
+	        dimension: 2,
+	        calculable: true,
+	        inRange: {
+	            color: ['#50a3ba', '#eac736', '#d94e5d']
+	        },
+	        textStyle: {
+	            color: '#fff'
+	        }
+	    },
+	    geo: {
+	        map: 'world',
+	        label: {
+	            emphasis: {
+	                show: false
+	            }
+	        },
+	        itemStyle: {
+	            normal: {
+	                areaColor: '#323c48',
+	                borderColor: '#111'
+	            },
+	            emphasis: {
+	                areaColor: '#2a333d'
+	            }
+	        }
+	    },
+	    series: [
+	        {
+	            name: 'meteoriteStrike',
+	            type: 'scatter',
+	            coordinateSystem: 'geo',
+	            data: convertData(this.props.meteoriteStrike),
+	            symbolSize: function(data){
+	            	return Math.sqrt(data[2])/100
+	            },
+	            label: {
+	                normal: {
+	                    show: false
+	                },
+	                emphasis: {
+	                    show: false
+	                }
+	            },
+	            itemStyle: {
+	                emphasis: {
+	                    borderColor: '#fff',
+	                    borderWidth: 1
+	                }
+	            }
+	        }
+	    ]
+	}
 
 	const optiona = {
 		title: { text: 'Gross Domestic Producta', left: 'center', top:'10px'},
@@ -308,8 +410,15 @@ const cycleData = graphql(cycleQuery, {
   }),
 });
 
+const meteoriteStrikeData = graphql(meteoriteStrikeQuery, {
+  props: ({ data: { loading, meteoriteStrike } }) => ({
+    loading, meteoriteStrike: meteoriteStrike || {},
+  }),
+});
+
 export default compose(
   withStyles(s),
   gdpData,
   cycleData,
+  meteoriteStrikeData,
 )(Dashboard);

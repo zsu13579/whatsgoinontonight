@@ -1,0 +1,6 @@
+{
+  "name": "Mapchar",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./Mapchar.js"
+}
