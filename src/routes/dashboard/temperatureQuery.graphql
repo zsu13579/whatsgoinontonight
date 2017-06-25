@@ -1,0 +1,8 @@
+{
+  temperature {
+  	variance,
+  	realTemp,
+  	month,
+  	year,
+  }
+}

@@ -6,6 +6,7 @@ import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import gdpQuery from './gdpQuery.graphql';
 import cycleQuery from './cycleQuery.graphql';
 import meteoriteStrikeQuery from './meteoriteStrikeQuery.graphql';
+import temperatureQuery from './temperatureQuery.graphql';
 import s from './Dashboard.css';
 import Barchar from '../../components/Barchar';
 // import ECharts from 'react-echarts';
@@ -22,7 +23,8 @@ class Dashboard extends React.Component {
 	let layouts = {lg: [
       {i: 'a', x: 0, y: 0, w: 5, h: 2, static: true},
       {i: 'b', x: 1, y: 0, w: 10, h: 4, minW: 2, maxW: 16},
-      {i: 'd', x: 4, y: 0, w: 10, h: 3}
+      {i: 'c', x: 4, y: 0, w: 10, h: 3},
+      {i: 'd', x: 4, y: 0, w: 10, h: 3},
 	]}
     this.state = {layouts: layouts};
   }
@@ -246,6 +248,79 @@ class Dashboard extends React.Component {
 	    }]
 	};
 
+	//heatmap of temp
+	const getYear = function(min,max){
+		let result = [];
+		for(let i=min;i<=max;i++){
+			result.push(i);
+		}
+		return result;
+	}
+	const year = getYear(1753,2015);
+	// const month = ['12','11','10','9','8','7','6','5','4','3','2','1'];
+	const month = ['December','November','October','September','August',
+	'July','June','May','April','March','February','January'];
+
+	const datac = this.props.temperature.map(function (item) {
+	    return [item.year-1753, 12 - item.month, item.variance, item.realTemp];
+	});
+
+	const optionc = {
+		title : {
+			text: 'Monthly Global Land-Surface Temperature'+'\n'+'1753 - 2015',
+			subtext: 'Temperatures are in Celsius and reported as anomalies relative to the Jan 1951-Dec 1980 average.' + '\n' + 
+			'Estimated Jan 1951-Dec 1980 absolute temperature ℃: 8.66 +/- 0.07',
+			left: 'center'
+		},
+	    tooltip: {
+	        position: 'top'
+	    },
+	    animation: false,
+	    // grid: {
+	    //     height: '50%',
+	    //     y: '10%'
+	    // },
+	    xAxis: {
+	        type: 'category',
+	        data: year,
+	        splitArea: {
+	            show: true
+	        }
+	    },
+	    yAxis: {
+	        type: 'category',
+	        data: month,
+	        interval: 0,
+	        splitArea: {
+	            show: true
+	        }
+	    },
+	    visualMap: {
+	        min: 0,
+	        max: 10,
+	        dimension: 2,
+	        calculable: true,
+	        orient: 'horizontal',
+	        left: 'center',
+	    },
+	    series: [{
+	        name: 'temperature',
+	        type: 'heatmap',
+	        data: datac,
+	        label: {
+	            normal: {
+	                show: true
+	            }
+	        },
+	        itemStyle: {
+	            emphasis: {
+	                shadowBlur: 10,
+	                shadowColor: 'rgba(0, 0, 0, 0.5)'
+	            }
+	        }
+	    }]
+	};
+
 	// world map option
 	// convert data to [name:name,value:[coordinates1,coordinates2,size]]
 	const convertData = function (data) {
@@ -387,6 +462,9 @@ class Dashboard extends React.Component {
 				<div key={'b'} className={s.echarts} > 
 				  <Barchar option={optionb} />
 				</div>
+				<div key={'c'} className={s.echarts} > 
+				  <Barchar option={optionc} />
+				</div>
 				<div key={'d'} className={s.echarts} > 
 				  <Barchar option={optiond} />
 				</div>
@@ -416,9 +494,16 @@ const meteoriteStrikeData = graphql(meteoriteStrikeQuery, {
   }),
 });
 
+const temperatureData = graphql(temperatureQuery, {
+  props: ({ data: { loading, temperature } }) => ({
+    loading, temperature: temperature || {},
+  }),
+});
+
 export default compose(
   withStyles(s),
   gdpData,
   cycleData,
   meteoriteStrikeData,
+  temperatureData,
 )(Dashboard);
