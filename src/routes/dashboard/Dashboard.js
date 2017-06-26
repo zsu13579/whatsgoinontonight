@@ -270,16 +270,15 @@ class Dashboard extends React.Component {
 			text: 'Monthly Global Land-Surface Temperature'+'\n'+'1753 - 2015',
 			subtext: 'Temperatures are in Celsius and reported as anomalies relative to the Jan 1951-Dec 1980 average.' + '\n' + 
 			'Estimated Jan 1951-Dec 1980 absolute temperature ℃: 8.66 +/- 0.07',
-			left: 'center'
+			left: 'center',
+			top: 5,
+			itemGap: 2,
+			
 		},
 	    tooltip: {
 	        position: 'top'
 	    },
 	    animation: false,
-	    // grid: {
-	    //     height: '50%',
-	    //     y: '10%'
-	    // },
 	    xAxis: {
 	        type: 'category',
 	        data: year,
@@ -290,18 +289,39 @@ class Dashboard extends React.Component {
 	    yAxis: {
 	        type: 'category',
 	        data: month,
+			axisTick: {
+				show: false,
+			},
+			axisLine: {
+				show: false,
+			},
 	        interval: 0,
 	        splitArea: {
 	            show: true
 	        }
 	    },
+		grid: {
+			top: '18%',
+		},
 	    visualMap: {
+			type: 'piecewise',
 	        min: 0,
-	        max: 10,
-	        dimension: 2,
+	        max: 12,
+	        dimension: 3,
 	        calculable: true,
 	        orient: 'horizontal',
 	        left: 'center',
+			splitNumber: 5,
+			color: ['#d94e5d','#eac736','#50a3ba'],
+			// pieces: [
+				// {min: 1500}, // 不指定 max，表示 max 为无限大（Infinity）。
+				// {min: 900, max: 1500},
+				// {min: 310, max: 1000},
+				// {min: 200, max: 300},
+				// {min: 10, max: 200, label: '10 到 200（自定义label）'},
+				// {value: 123, label: '123（自定义特殊颜色）', color: 'grey'}, // 表示 value 等于 123 的情况。
+				// {max: 5}     // 不指定 min，表示 min 为无限大（-Infinity）。
+			// ],
 	    },
 	    series: [{
 	        name: 'temperature',
@@ -309,7 +329,7 @@ class Dashboard extends React.Component {
 	        data: datac,
 	        label: {
 	            normal: {
-	                show: true
+	                show: false
 	            }
 	        },
 	        itemStyle: {
