@@ -83,8 +83,8 @@ class Dashboard extends React.Component {
 	}
 
 	// Show National Contiguity with a Force Directed Graph
-	const getImg = function(){
-		return 'image://flags.png';
+	const getImg = function(countryCode){
+		return 'image://flagPng/'+countryCode+'cn.png';
 	};
 
 	let graph = this.props.country;
