@@ -11,6 +11,7 @@ import gdp from './queries/gdp';
 import cycle from './queries/cycle';
 import meteoriteStrike from './queries/meteoriteStrike';
 import temperature from './queries/temperature';
+import country from './queries/country';
 import enroll from './mutations/enroll';
 import notEnroll from './mutations/notEnroll';
 import uploadAvatar from './mutations/uploadAvatar';
@@ -38,6 +39,7 @@ const schema = new Schema({
       cycle,
       meteoriteStrike,
       temperature,
+      country,
     },
   }),
   mutation: Mutation,

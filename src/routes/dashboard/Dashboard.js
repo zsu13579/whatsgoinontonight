@@ -7,6 +7,7 @@ import gdpQuery from './gdpQuery.graphql';
 import cycleQuery from './cycleQuery.graphql';
 import meteoriteStrikeQuery from './meteoriteStrikeQuery.graphql';
 import temperatureQuery from './temperatureQuery.graphql';
+import countryQuery from './countryQuery.graphql';
 import s from './Dashboard.css';
 import Barchar from '../../components/Barchar';
 // import ECharts from 'react-echarts';
@@ -25,6 +26,7 @@ class Dashboard extends React.Component {
       {i: 'b', x: 1, y: 0, w: 10, h: 4, minW: 2, maxW: 16},
       {i: 'c', x: 4, y: 0, w: 10, h: 3},
       {i: 'd', x: 4, y: 0, w: 10, h: 3},
+      {i: 'e', x: 4, y: 0, w: 10, h: 4},
 	]}
     this.state = {layouts: layouts};
   }
@@ -80,6 +82,57 @@ class Dashboard extends React.Component {
       return (<div>An unexpected error occurred</div>)
 	}
 
+	// Show National Contiguity with a Force Directed Graph
+	const getImg = function(){
+		return 'image://flags.png';
+	};
+
+	let graph = this.props.country;
+    // graph.nodes.forEach(function (node) {
+    //     node.itemStyle = null;
+    //     node.symbolSize = 10;
+    //     node.value = node.symbolSize;
+    //     // node.category = node.attributes.modularity_class;
+    //     // Use random x, y
+    //     node.x = node.y = null;
+    //     node.draggable = true;
+    // });
+    const optione = {
+        title: {
+            text: 'Les Miserables',
+            subtext: 'Default layout',
+            top: 'bottom',
+            left: 'right'
+        },
+        tooltip: {},
+        // legend: [{
+        //     // selectedMode: 'single',
+        //     data: categories.map(function (a) {
+        //         return a.name;
+        //     })
+        // }],
+        animation: false,
+        series : [
+            {
+                name: 'Les Miserables',
+                type: 'graph',
+                layout: 'force',
+                data: graph.nodes,
+                links: graph.links,
+                // categories: categories,
+                roam: false,
+                symbol: getImg(),
+                label: {
+                    normal: {
+                        position: 'right'
+                    }
+                },
+            }
+        ]
+    };
+
+	
+	// bycycle scatter map
 	const data = [[],[]];
 	data[0]=this.changeDataFormat(this.props.cycle[0]);
 	data[1]=this.changeDataFormat(this.props.cycle[1]);
@@ -467,11 +520,12 @@ class Dashboard extends React.Component {
 			type: 'bar',
 			data: this.props.gdp.sData
 		}]
-		};	
+		};
+			
     return (
 	<div className={s.root}>
 		<div className={s.container}>
-		 		     			
+		 	<img src="blank.gif" className="flag flag-cz" alt="Czech Republic" />	     			
 			<ResponsiveReactGridLayout className="layout" layouts={this.state.layouts} onLayoutChange={this.onLayoutChange}
 			  breakpoints={{lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0}}
 			  cols={{lg: 12, md: 10, sm: 6, xs: 4, xxs: 2}}
@@ -487,6 +541,9 @@ class Dashboard extends React.Component {
 				</div>
 				<div key={'d'} className={s.echarts} > 
 				  <Barchar option={optiond} />
+				</div>
+				<div key={'e'} className={s.echarts} > 
+				  <Barchar option={optione} />
 				</div>
 			</ResponsiveReactGridLayout>
 
@@ -520,10 +577,17 @@ const temperatureData = graphql(temperatureQuery, {
   }),
 });
 
+const countryData = graphql(countryQuery, {
+  props: ({ data: { loading, country } }) => ({
+    loading, country: country || {},
+  }),
+});
+
 export default compose(
   withStyles(s),
   gdpData,
   cycleData,
   meteoriteStrikeData,
   temperatureData,
+  countryData,
 )(Dashboard);
