@@ -84,18 +84,32 @@ class Dashboard extends React.Component {
 
 	// Show National Contiguity with a Force Directed Graph
 	const getImg = function(countryCode){
-		return 'image://flagPng/'+countryCode+'cn.png';
+		return 'image://flagPng/'+countryCode+'.png';
+	};
+	
+	// node: {country: 'China', code: 'cn'} to node: {country: 'China', code: 'cn', symbol: 'image://flagPng/cn.png'}
+	const convertNode = function(node){
+		let result = {};
+		let tooltip = {};
+		tooltip.formatter = node.country;
+		result.country=node.country;
+		result.code=node.code;
+		result.symbol=getImg(node.code);
+		result.tooltip=tooltip;
+		return result;
 	};
 
-	let graph = this.props.country;
+	let graph = {};
+	graph.nodes = this.props.country.nodes.map(node => convertNode(node));
+	graph.links = this.props.country.links;
     // graph.nodes.forEach(function (node) {
-    //     node.itemStyle = null;
-    //     node.symbolSize = 10;
-    //     node.value = node.symbolSize;
-    //     // node.category = node.attributes.modularity_class;
-    //     // Use random x, y
-    //     node.x = node.y = null;
-    //     node.draggable = true;
+        // node.itemStyle = null;
+        // node.symbol = getImg(node);
+        // // node.value = node.symbolSize;
+        // // // node.category = node.attributes.modularity_class;
+        // // // Use random x, y
+        // // node.x = node.y = null;
+        // // node.draggable = true;
     // });
     const optione = {
         title: {
@@ -121,7 +135,7 @@ class Dashboard extends React.Component {
                 links: graph.links,
                 // categories: categories,
                 roam: false,
-                symbol: getImg(),
+                // symbol: convertNode(),
                 label: {
                     normal: {
                         position: 'right'
@@ -524,8 +538,7 @@ class Dashboard extends React.Component {
 			
     return (
 	<div className={s.root}>
-		<div className={s.container}>
-		 	<img src="blank.gif" className="flag flag-cz" alt="Czech Republic" />	     			
+		<div className={s.container}>     			
 			<ResponsiveReactGridLayout className="layout" layouts={this.state.layouts} onLayoutChange={this.onLayoutChange}
 			  breakpoints={{lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0}}
 			  cols={{lg: 12, md: 10, sm: 6, xs: 4, xxs: 2}}
@@ -546,7 +559,6 @@ class Dashboard extends React.Component {
 				  <Barchar option={optione} />
 				</div>
 			</ResponsiveReactGridLayout>
-			<img src="blank.gif" class="flag flag-cz" alt="Czech Republic" />
 		</div>
 	</div>
     );
