@@ -46,34 +46,11 @@ class Dashboard extends React.Component {
 	  
 	  this.setState({layouts: layouts})
     };
-
-    //change time fromat
-    // from int to mm:ss
-    changeTimeformat = (sec) => {
-      let minutes = Math.floor((sec % 3600) / 60); 	
-      let seconds = Math.floor(sec % 60);
-      if (minutes < 10) {minutes = "0"+minutes;}
-      if (seconds < 10) {seconds = "0"+seconds;}
-      return (minutes+":"+seconds)
-    }
-
-    //change data fromat
-    // from [{},{},...] to [[],[],...]
-    changeDataFormat = (data) => {
-	  let dataout = [];
-	  let changeTimeformat = this.changeTimeformat;	  
-	  data.forEach(function(value,index,arr){
-	  	let timeDiff = changeTimeformat(value.Seconds-2210);
-	  	let valueArr = [value.Seconds-2210,value.Place,value.Seconds,value.Name,value.Doping,value.Nationality,value.Time];
-	  	dataout.push(valueArr);
-	  })
-	  return dataout;	  
-    };
-
-
+  
+    
   render() {	
 
-  	if (this.props.loading) {
+  	if (this.props.loadinga||this.props.loadingb||this.props.loadingc||this.props.loadingd||this.props.loadinge) {
 	  return (<div>Loading</div>)
 	}
 
@@ -147,10 +124,35 @@ class Dashboard extends React.Component {
 
 	
 	// bycycle scatter map
+	// 
+	//change time fromat
+    // from int to mm:ss
+    function changeTimeformat(sec) {
+      let minutes = Math.floor((sec % 3600) / 60); 	
+      let seconds = Math.floor(sec % 60);
+      if (minutes < 10) {minutes = "0"+minutes;}
+      if (seconds < 10) {seconds = "0"+seconds;}
+      return (minutes+":"+seconds)
+    };
+
+    //change data fromat
+    // from [{},{},...] to [[],[],...]
+    function changeDataFormat(data) {
+	  let dataout = [];
+	  // let changeTimeformat = changeTimeformat;	  
+	  data.forEach(function(value,index,arr){
+	  	let timeDiff = changeTimeformat(value.Seconds-2210);
+	  	let valueArr = [value.Seconds-2210,value.Place,value.Seconds,value.Name,value.Doping,value.Nationality,value.Time];
+	  	dataout.push(valueArr);
+	  })
+	  return dataout;	  
+    };
+
+	
 	const data = [[],[]];
-	data[0]=this.changeDataFormat(this.props.cycle[0]);
-	data[1]=this.changeDataFormat(this.props.cycle[1]);
-	const changeTimeformat = this.changeTimeformat;
+	data[0]=changeDataFormat(this.props.cycle[0]);	
+	data[1]=changeDataFormat(this.props.cycle[1]);
+	// const changeTimeformat = this.changeTimeformat;
 
 	const optiond = {
 	    backgroundColor: new echarts.graphic.RadialGradient(0.3, 0.3, 0.8, [{
@@ -568,31 +570,31 @@ class Dashboard extends React.Component {
 
 const gdpData = graphql(gdpQuery, {
   props: ({ data: { loading, gdp } }) => ({
-    loading, gdp: gdp || {},
+    loadinga:loading, gdp: gdp || {},
   }),
 });
 
 const cycleData = graphql(cycleQuery, {
   props: ({ data: { loading, cycle } }) => ({
-    loading, cycle: cycle || [],
+    loadingb:loading, cycle: cycle || [],
   }),
 });
 
 const meteoriteStrikeData = graphql(meteoriteStrikeQuery, {
   props: ({ data: { loading, meteoriteStrike } }) => ({
-    loading, meteoriteStrike: meteoriteStrike || [],
+    loadingc:loading, meteoriteStrike: meteoriteStrike || [],
   }),
 });
 
 const temperatureData = graphql(temperatureQuery, {
   props: ({ data: { loading, temperature } }) => ({
-    loading, temperature: temperature || [],
+    loadingd:loading, temperature: temperature || [],
   }),
 });
 
 const countryData = graphql(countryQuery, {
   props: ({ data: { loading, country } }) => ({
-    loading, country: country || [],
+    loadinge: loading, country: country || [],
   }),
 });
 
