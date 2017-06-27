@@ -38,7 +38,8 @@ class Html extends React.Component {
 		  <link rel="stylesheet" href="/css/bootstrap.min.css" />
 		  <link rel="stylesheet" href="/css/font-awesome.min.css" />
 		  <link rel="stylesheet" href="/css/react-grid-layout.css" />
-		  <link rel="stylesheet" href="/css/resizable.css" />		  
+		  <link rel="stylesheet" href="/css/resizable.css" />		
+      <link rel="stylesheet" href="/css/flags.min.css" />      
           {styles.map(style =>
             <style
               key={style.id}

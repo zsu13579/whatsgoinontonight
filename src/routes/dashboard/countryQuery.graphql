@@ -1,0 +1,12 @@
+{
+  country {
+  	nodes {
+  	  country
+  	  code
+  	},
+  	links {
+  	  target
+  	  source
+  	},
+  }
+}

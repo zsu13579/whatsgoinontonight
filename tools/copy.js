@@ -39,7 +39,9 @@ async function copy() {
   await copyFile('node_modules/font-awesome/fonts/fontawesome-webfont.woff2', 'build/public/fonts/fontawesome-webfont.woff2');	
   await copyFile('node_modules/react-grid-layout/css/styles.css', 'build/public/css/react-grid-layout.css');
   await copyFile('node_modules/react-resizable/css/styles.css', 'build/public/css/resizable.css');	
-  
+  await copyFile('public/flags/flags.min.css', 'build/public/css/flags.min.css');
+  await copyFile('public/flags/flags.png', 'build/public/css/flags.png');
+
   if (process.argv.includes('--watch')) {
     const watcher = chokidar.watch([
       'public/**/*',
