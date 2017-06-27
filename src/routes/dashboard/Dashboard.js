@@ -323,14 +323,15 @@ class Dashboard extends React.Component {
 		}
 		return result;
 	}
+	const convertTemperature = function(item){
+		return [item.year-1753, 12 - item.month, item.variance, item.realTemp];
+	}
 	const year = getYear(1753,2015);
 	// const month = ['12','11','10','9','8','7','6','5','4','3','2','1'];
 	const month = ['December','November','October','September','August',
 	'July','June','May','April','March','February','January'];
 
-	const datac = this.props.temperature.map(function (item) {
-	    return [item.year-1753, 12 - item.month, item.variance, item.realTemp];
-	});
+	const datac = this.props.temperature.map(temp => convertTemperature(temp));
 
 	const optionc = {
 		title : {
@@ -573,25 +574,25 @@ const gdpData = graphql(gdpQuery, {
 
 const cycleData = graphql(cycleQuery, {
   props: ({ data: { loading, cycle } }) => ({
-    loading, cycle: cycle || {},
+    loading, cycle: cycle || [],
   }),
 });
 
 const meteoriteStrikeData = graphql(meteoriteStrikeQuery, {
   props: ({ data: { loading, meteoriteStrike } }) => ({
-    loading, meteoriteStrike: meteoriteStrike || {},
+    loading, meteoriteStrike: meteoriteStrike || [],
   }),
 });
 
 const temperatureData = graphql(temperatureQuery, {
   props: ({ data: { loading, temperature } }) => ({
-    loading, temperature: temperature || {},
+    loading, temperature: temperature || [],
   }),
 });
 
 const countryData = graphql(countryQuery, {
   props: ({ data: { loading, country } }) => ({
-    loading, country: country || {},
+    loading, country: country || [],
   }),
 });
 

@@ -11,23 +11,26 @@ const temperature = {
   async resolve() {
 
       let items = [];
+	  let result = [];
       let lastFetchTask;
 
       lastFetchTask = await fetch(url)
         .then(response => response.json())
         .then((res) => {
-          let baseTemperature = res.baseTemperature;
-    		  res.monthlyVariance.forEach(function(value,index,arr){ 
-           let val = value;
-           val.realTemp = baseTemperature+value.variance;           
-    			 items.push(val);
-    		  })
+          items = res;
         })
         .finally(() => {
           lastFetchTask = null;
         });
+		
+	  let baseTemperature = items.baseTemperature;
+	  items.monthlyVariance.forEach(function(value,index,arr){ 
+		  let val = value;
+		  val.realTemp = baseTemperature+value.variance;           
+			 result.push(val);
+	  });	
 
-	return items;
+	return result;
   },
 };
 
