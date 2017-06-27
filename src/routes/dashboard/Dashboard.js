@@ -489,7 +489,7 @@ class Dashboard extends React.Component {
 				  <Barchar option={optiond} />
 				</div>
 			</ResponsiveReactGridLayout>
-
+			<img src="blank.gif" class="flag flag-cz" alt="Czech Republic" />
 		</div>
 	</div>
     );
