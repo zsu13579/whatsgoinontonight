@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { graphql, compose } from 'react-apollo';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
-import s from './Roguelike.css';
+import s from './Gameoflife.css';
 import { connect } from 'react-redux';
 import { setRuntimeVariable } from '../../actions/runtime';
 
@@ -51,60 +51,7 @@ class Ge extends React.Component{
   };
 };
 
-
-class Roguelike extends React.Component{ 
-  constructor(...args){
-    super(...args);
-    let board={};
-    let row=50;
-    let col=70;
-    let gen=0;
-    let choice=['empty','newborn','adult'];
-      for(let i=0;i<row;i++){
-      for(let j=0;j<col;j++){
-      let id="r"+i+"c"+j;
-      let vr=Math.floor(Math.random()*3);
-      board[id]=choice[vr];
-      };
-    };
-
-    this.state = {row:row,col:col,board:board,isPause:0,isClear:0,gen:gen,speed:300}
-
-  };
-
-  componentDidMount = function(){
-
-  };
-  componentWillUnmount = function(){
-
-  };
-
-  render(){
-    return (
-      <div id={s.mainContainer}>
-        <div>
-          <span className={s.playerstate}>Health: 100</span>
-          <span className={s.playerstate}>Weapon: stick</span>
-          <span className={s.playerstate}>Attack: 7</span>
-          <span className={s.playerstate}>Level: 0</span>
-          <span className={s.playerstate}>Next Level: 60 XP</span>
-          <span className={s.playerstate}>Dungeon: 0</span>
-        </div>
-        <div id={s.gameboard}>
-        
-        </div>
-        <div id={s.mubu}>
-        
-        </div>
-        <div id={s.me}>
-        
-        </div>
-      </div>
-    )
-  }
-};
-
-class Roguelike1 extends React.Component{ 
+class Gameoflife extends React.Component{ 
   constructor(...args){
     super(...args);
     let board={};
@@ -274,11 +221,13 @@ class Roguelike1 extends React.Component{
       };
     };
     this.intervals.forEach(clearInterval);
+    // this.componentWillUnmount();
     this.setState({board:board,isClear:1,gen:0});
   };
 
   handlePause = function(){    
     this.intervals.forEach(clearInterval);
+    // this.componentWillUnmount();
   };
 
   handleStart = function(){
@@ -356,4 +305,4 @@ function mapDispatch(dispatch,ownProps) {
 export default compose(
   withStyles(s),
   connect(mapStateToProps,mapDispatch),
-)(Roguelike);
+)(Gameoflife);

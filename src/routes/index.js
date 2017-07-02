@@ -25,6 +25,7 @@ export default {
     require('./privacy').default,
 	require('./dashboard').default,
   require('./roguelike').default,
+  require('./gameoflife').default,
     require('./admin').default,
 
     // Wildcard routes, e.g. { path: '*', ... } (must go last)
