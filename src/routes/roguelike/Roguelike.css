@@ -23,7 +23,7 @@ body{
 #mubu{
   position: absolute;
   background-color: black;
-  width:  1200px;
+  width:  600px;
   height: 600px;
   margin: 10px 10px;
   z-index: 2;
@@ -38,7 +38,7 @@ body{
   z-index: 3;
   margin-left: 100px;
   margin-top: 100px;
-  opacity: 0;
+  opacity: 0.8;
 }
 
 .playerstate{
@@ -56,13 +56,11 @@ li{
   width: 100%;
 }
 .empty{
-  background-color:black;
+  background-color: #808080;
   height: 10px;
   width: 10px;
   display:  block;
   float: left;
-  border-right:  1px solid #222;
-  border-top:  1px solid #222;
   overflow: hidden;
 }
 .newborn{

@@ -31,17 +31,17 @@ class Ge extends React.Component{
     this.state = {stage:stage}
   };
 
-  componentWillReceiveProps = function(nextProps){
-    this.setState({stage:nextProps.stage})
-  };
+  // componentWillReceiveProps = function(nextProps){
+  //   this.setState({stage:nextProps.stage})
+  // };
   handleClick = function(){
-    let stage=this.state.stage;
-    let id="r"+this.props.row+"c"+this.props.col;
-    if(stage=="empty"){
-      stage="newborn";
-      this.setState({stage:stage});
-      this.props.handleChange(id,stage);
-    }
+    // let stage=this.state.stage;
+    // let id="r"+this.props.row+"c"+this.props.col;
+    // if(stage=="empty"){
+    //   stage="newborn";
+    //   this.setState({stage:stage});
+    //   this.props.handleChange(id,stage);
+    // }
   };
   render(){
     let id="r"+this.props.row+"c"+this.props.col;
@@ -56,19 +56,23 @@ class Roguelike extends React.Component{
   constructor(...args){
     super(...args);
     let board={};
-    let row=50;
-    let col=70;
+    let row=60;
+    let col=120;
     let gen=0;
     let choice=['empty','newborn','adult'];
       for(let i=0;i<row;i++){
       for(let j=0;j<col;j++){
       let id="r"+i+"c"+j;
       let vr=Math.floor(Math.random()*3);
-      board[id]=choice[vr];
+      board[id]=choice[0];
       };
     };
 
     this.state = {row:row,col:col,board:board,isPause:0,isClear:0,gen:gen,speed:300}
+
+  };
+
+  handleChange = function(){
 
   };
 
@@ -80,6 +84,21 @@ class Roguelike extends React.Component{
   };
 
   render(){
+    let geList=[];
+    let col=this.state.col;
+    let row=this.state.row;
+    let board=this.state.board;
+    let id="";
+    let stage="";
+    for(let i=0;i<row;i++){
+      let rowList=[];
+      for(let j=0;j<col;j++){     
+      id="r"+i+"c"+j;
+      stage=board[id];    
+      rowList.push(<Ge row={i} col={j} stage={stage} handleChange={this.handleChange.bind(this)} />);
+      };
+      geList.push(<tr><td>{rowList}</td></tr>);
+    };
     return (
       <div id={s.mainContainer}>
         <div>
@@ -91,9 +110,13 @@ class Roguelike extends React.Component{
           <span className={s.playerstate}>Dungeon: 0</span>
         </div>
         <div id={s.gameboard}>
-        
+          <table> 
+            <tbody>
+              {geList}
+            </tbody>
+          </table>
         </div>
-        <div id={s.mubu}>
+        <div id={s.mubu1}>
         
         </div>
         <div id={s.me}>
