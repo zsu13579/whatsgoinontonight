@@ -59,12 +59,13 @@ class Roguelike extends React.Component{
     let row=60;
     let col=120;
     let gen=0;
-    let choice=['empty','newborn','adult'];
-      for(let i=0;i<row;i++){
+    let rects=[];
+    let choice=['empty','whiteGe','adult'];
+    for(let i=0;i<row;i++){
       for(let j=0;j<col;j++){
-      let id="r"+i+"c"+j;
-      let vr=Math.floor(Math.random()*3);
-      board[id]=choice[0];
+        let id="r"+i+"c"+j;
+        let vr=Math.floor(Math.random()*3);
+        board[id]=choice[0];
       };
     };
 
