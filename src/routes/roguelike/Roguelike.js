@@ -51,6 +51,57 @@ class Ge extends React.Component{
   };
 };
 
+class Leaf extends React.Component{
+
+  constructor(...args){
+    super(...args);
+    let { x, y, width, height, leftChild, rightChild, room, halls } = this.props;
+    this.state = {x:x, y:y, width:width, height: height}
+  };
+
+  // componentWillReceiveProps = function(nextProps){
+  //   this.setState({stage:nextProps.stage})
+  // };
+
+  split = function(){
+    // let stage=this.state.stage;
+    // let id="r"+this.props.row+"c"+this.props.col;
+    // if(stage=="empty"){
+    //   stage="newborn";
+    //   this.setState({stage:stage});
+    //   this.props.handleChange(id,stage);
+    // }
+  };
+
+  class RogueMap extends React.Component{
+
+  constructor(...args){
+    super(...args);
+    let { x, y, width, height } = this.props;
+    this.state = {x:x, y:y, width:width, height: height}
+  };
+
+  // componentWillReceiveProps = function(nextProps){
+  //   this.setState({stage:nextProps.stage})
+  // };
+
+  split = function(){
+    // let stage=this.state.stage;
+    // let id="r"+this.props.row+"c"+this.props.col;
+    // if(stage=="empty"){
+    //   stage="newborn";
+    //   this.setState({stage:stage});
+    //   this.props.handleChange(id,stage);
+    // }
+  };
+
+  render(){
+    let id="r"+this.props.row+"c"+this.props.col;
+    return (
+      <span id={id} className={s[this.state.stage]} onClick={this.handleClick.bind(this)}></span>
+      )
+  };
+};
 
 class Roguelike extends React.Component{ 
   constructor(...args){
