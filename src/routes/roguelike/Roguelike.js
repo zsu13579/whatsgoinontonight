@@ -72,12 +72,28 @@ class Leaf extends React.Component{
     //   this.props.handleChange(id,stage);
     // }
   };
-
-  class RogueMap extends React.Component{
+}
+  
+class RogueMap extends React.Component{
 
   constructor(...args){
     super(...args);
     let { x, y, width, height } = this.props;
+	let Leaf = {
+		createNew: function(x, y, width, height){
+			let leaf = {};
+			leaf.x = x;
+			leaf.y = y;
+			leaf.width = width;
+			leaf.height = height;
+			leaf.split = function(){
+				console.log("Leaf..Leaf..")
+			}
+			return leaf;
+		}		
+	};
+	let leaf1 = Leaf.createNew(x, y, width, height);
+	leaf1.split();
     this.state = {x:x, y:y, width:width, height: height}
   };
 
