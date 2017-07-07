@@ -136,6 +136,25 @@ class Roguelike extends React.Component{
       };
     };
 
+    let Leaf = {
+      createNew: function(x, y, width, height){
+        let leaf = {};
+        leaf.x = x;
+        leaf.y = y;
+        leaf.width = width;
+        leaf.height = height;
+        leaf.leftChild = Leaf.createNew(10, 50, 1200, 900);
+        
+        return leaf;
+      },
+      split : function(){
+          console.log("leaf.width")
+      },
+      let leftChild = Leaf.createNew   
+    };
+    let leaf1 = Leaf.createNew(10, 50, 1200, 900);
+    leaf1.split();
+
     this.state = {row:row,col:col,board:board,isPause:0,isClear:0,gen:gen,speed:300}
 
   };
