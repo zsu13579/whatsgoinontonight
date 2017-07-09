@@ -5,6 +5,8 @@ import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import s from './Roguelike.css';
 import { connect } from 'react-redux';
 import { setRuntimeVariable } from '../../actions/runtime';
+import canvas from 'canvas';
+// import {Layer, Rect, Stage, Group} from 'react-konva';
 
 class Btn extends React.Component{
 
@@ -79,7 +81,7 @@ class RogueMap extends React.Component{
   constructor(...args){
     super(...args);
     let { x, y, width, height } = this.props;
-	let Leaf = {
+	  let Leaf = {
 		createNew: function(x, y, width, height){
 			let leaf = {};
 			leaf.x = x;
@@ -136,26 +138,303 @@ class Roguelike extends React.Component{
       };
     };
 
+    // 1 represent 10px;
     let Leaf = {
-      createNew: function(x, y, width, height){
+      createNew: function(x=1, y=5, width=60, height=60){
         let leaf = {};
+        const MIN_LEAF_SIZE = 6 ;
         leaf.x = x;
         leaf.y = y;
         leaf.width = width;
         leaf.height = height;
-        leaf.leftChild = Leaf.createNew(10, 50, 1200, 900);
+        leaf.leftChild = 0;
+        leaf.rightChild = 0;
+        leaf.room = 0;
+        leaf.halls = [];
+        leaf.split = function(){
+          // begin to split the leaf into two children
+          if (leaf.leftChild != 0 || leaf.rightChild != 0 ){
+            return false; // we're already split! Abort!
+          }
+          // determine direction of split
+          // if the width is >25% larger than height, we split vertically
+          // if the height is >25% larger than the width, we split horizontally
+          // otherwise we split randomly
+          let splitH = Math.random() > 0.5 ? true : false;
+          if (leaf.width > leaf.height && leaf.width / leaf.height >= 1.25){
+            splitH = false;
+          }else if (leaf.height > leaf.width && leaf.height / leaf.width >= 1.25){
+            splitH = true;
+          }
+          let max = (splitH ? leaf.height: leaf.width) - MIN_LEAF_SIZE ; // determine the maximum height or width
+          if (max <= MIN_LEAF_SIZE)
+          {  
+            return false; // the area is too small to split any more...
+          };
+          let split = Math.floor(Math.random() * (max - MIN_LEAF_SIZE)) + MIN_LEAF_SIZE;
+          // create our left and right children based on the direction of the split
+          if (splitH)
+          {
+            leaf.leftChild = Leaf.createNew(x, y, leaf.width, split);
+            leaf.rightChild = Leaf.createNew(x, y + split, leaf.width, leaf.height - split);
+          }
+          else
+          {
+            leaf.leftChild = Leaf.createNew(x, y, split, leaf.height);
+            leaf.rightChild = Leaf.createNew(x + split, y, leaf.width - split, leaf.height);
+          }
+          return true; // split successful!
+        };
+        leaf.createHall = function(lRoom, rRoom){
+          // connect two rooms together with hallways
+          let halls = [];
+          let point1 = [];
+          let point2 = [];
+          point1[0] = Math.floor(Math.random() * (lRoom.width -2)) + 1;
+          point1[1] = Math.floor(Math.random() * (lRoom.height -2)) + 1;
+          point2[0] = Math.floor(Math.random() * (rRoom.width -2)) + 1;
+          point2[1] = Math.floor(Math.random() * (rRoom.height -2)) + 1;
+          let w = point1[0] - point2[0];
+          let h = point1[1] - point2[1];
+          let hall1 = {};
+          let hall2 = {};
+          if(w < 0){
+            if( h < 0){
+              //   2
+              // 1
+              if(Math.random() < 0.5){
+                hall1.x = point1[0];
+                hall1.y = point1[1];
+                hall1.height = Math.abs(h);
+                hall1.width = 1;
+                hall2.x = point1[0];
+                hall2.y = point2[1];
+                hall2.height = 1;
+                hall2.width = Math.abs(w);
+                halls.push(hall1);
+                halls.push(hall2);
+              }else{
+                hall1.x = point1[0];
+                hall1.y = point1[1];
+                hall1.height = 1;
+                hall1.width = Math.abs(w);
+                hall2.x = point2[0];
+                hall2.y = point1[1];
+                hall2.height = Math.abs(h);
+                hall2.width = 1;
+                halls.push(hall1);
+                halls.push(hall2);
+              }
+            }else if(h > 0){
+              // 1
+              //    2
+              if(Math.random() < 0.5){
+                hall1.x = point1[0];
+                hall1.y = point2[1];
+                hall1.height = Math.abs(h);
+                hall1.width = 1;
+                hall2.x = point1[0];
+                hall2.y = point2[1];
+                hall2.height = 1;
+                hall2.width = Math.abs(w);
+                halls.push(hall1);
+                halls.push(hall2);
+              }else{
+                hall1.x = point1[0];
+                hall1.y = point1[1];
+                hall1.height = 1;
+                hall1.width = Math.abs(w);
+                hall2.x = point2[0];
+                hall2.y = point2[1];
+                hall2.height = Math.abs(h);
+                hall2.width = 1;
+                halls.push(hall1);
+                halls.push(hall2);
+              }
+            }else{ // h == 0
+              hall1.x = point1[0];
+              hall1.y = point1[1];
+              hall1.height = 1;
+              hall1.width = Math.abs(w);
+              halls.push(hall1);
+            }
+          }else if( w > 0){
+            if( h < 0){
+              // 2
+              //    1
+              if(Math.random() < 0.5){
+                hall1.x = point2[0];
+                hall1.y = point1[1];
+                hall1.height = Math.abs(h);
+                hall1.width = 1;
+                hall2.x = point2[0];
+                hall2.y = point1[1];
+                hall2.height = 1;
+                hall2.width = Math.abs(w);
+                halls.push(hall1);
+                halls.push(hall2);
+              }else{
+                hall1.x = point2[0];
+                hall1.y = point2[1];
+                hall1.height = 1;
+                hall1.width = Math.abs(w);
+                hall2.x = point1[0];
+                hall2.y = point1[1];
+                hall2.height = Math.abs(h);
+                hall2.width = 1;
+                halls.push(hall1);
+                halls.push(hall2);
+              }
+            }else if(h > 0){
+              //   1
+              // 2
+              if(Math.random() < 0.5){
+                hall1.x = point2[0];
+                hall1.y = point2[1];
+                hall1.height = Math.abs(h);
+                hall1.width = 1;
+                hall2.x = point2[0];
+                hall2.y = point1[1];
+                hall2.height = 1;
+                hall2.width = Math.abs(w);
+                halls.push(hall1);
+                halls.push(hall2);
+              }else{
+                hall1.x = point2[0];
+                hall1.y = point2[1];
+                hall1.height = 1;
+                hall1.width = Math.abs(w);
+                hall2.x = point1[0];
+                hall2.y = point2[1];
+                hall2.height = Math.abs(h);
+                hall2.width = 1;
+                halls.push(hall1);
+                halls.push(hall2);
+              }
+            }else{ // h == 0
+              // 2 1
+              hall1.x = point2[0];
+              hall1.y = point2[1];
+              hall1.height = 1;
+              hall1.width = Math.abs(w);
+              halls.push(hall1);
+            }
+          }else{ // w == 0
+            if(h > 0){
+              // 1
+              // 2
+              hall1.x = point2[0];
+              hall1.y = point2[1];
+              hall1.height = Math.abs(h);
+              hall1.width = 1;
+              halls.push(hall1);
+            }else{
+              // 2
+              // 1
+              hall1.x = point1[0];
+              hall1.y = point1[1];
+              hall1.height = Math.abs(h);
+              hall1.width = 1;
+              halls.push(hall1);
+            }
+          }
+          leaf.halls = halls;
+        }
         
+        leaf.createRooms = function(){
+          // this function generates all the rooms and hallways for this Leaf and all of its children
+          if(leaf.leftChild != 0 || leaf.rightChild !=0){
+            // this leaf have been split, so go into the children
+            if(leaf.leftChild != 0){
+              leaf.leftChild.createRooms();
+            }
+            if(leaf.rightChild != 0){
+              leaf.rightChild.createRooms();
+            }
+            if(leaf.rightChild != 0 && leaf.leftChild != 0){
+              let rRoom = leaf.rightChild.getRoom();
+              let lRoom = leaf.leftChild.getRoom();
+              leaf.createHall(rRoom,lRoom);
+            }
+          }else{
+            // this leaf is already to make room
+            let roomSize = [0,0];
+            let roomPos = [0,0];
+            // the room can be 4x4 tiles to the size of the leaf - 2;
+            roomSize[0] = Math.floor(Math.random() * (leaf.width-2-4)) + 4;
+            roomSize[1] = Math.floor(Math.random() * (leaf.height-2-4)) + 4;
+            roomPos[0] = Math.floor(Math.random() * (leaf.width - roomSize[0] - 1)) + 1;
+            roomPos[1] = Math.floor(Math.random() * (leaf.height - roomSize[1] - 1)) + 1;
+            leaf.room = {
+              x: roomPos[0],
+              y: roomPos[1],
+              width: roomSize[0],
+              height: roomSize[1]
+            }
+          }
+        }
+        leaf.getRoom = function(){
+          if(leaf.room != 0){
+            return leaf.room
+          }else{ 
+            let lRoom = 0;
+            let rRoom = 0;
+            if(leaf.leftChild != 0 ){
+              lRoom = leaf.leftChild.getRoom();
+            }
+            if(leaf.rightChild != 0 ){
+              rRoom = leaf.rightChild.getRoom();
+            }
+            if(lRoom == 0 && rRoom == 0){
+              return 0
+            }else if(lRoom == 0){
+              return rRoom;
+            }else if(rRoom == 0){
+              return lRoom;
+            }else if(Math.random() > 0.5){
+              return lRoom;
+            }else{
+              return rRoom;
+            }
+
+          }
+
+        };
+               
         return leaf;
       },
-      split : function(){
-          console.log("leaf.width")
-      },
-      let leftChild = Leaf.createNew   
     };
-    let leaf1 = Leaf.createNew(10, 50, 1200, 900);
+    // test
+    let leaf1 = Leaf.createNew();
     leaf1.split();
-
-    this.state = {row:row,col:col,board:board,isPause:0,isClear:0,gen:gen,speed:300}
+    
+    // create rooms and halls, save in leafList
+    let MAX_LEAF_SIZE = 20; 
+    let leafList = [];
+    let rootLeaf = Leaf.createNew();
+    leafList.push(rootLeaf);
+    let did_split = true;
+    while(did_split){
+      did_split = false;
+      leafList.forEach(function(l,index,arr){
+        if(l.leftChild == 0 && l.rightChild == 0){ // if this Leaf is not already
+           // if this Leaf is too big, or 75% chance...
+           if (l.width > MAX_LEAF_SIZE || l.height > MAX_LEAF_SIZE )
+           {
+             if (l.split()) // split the Leaf!
+             {
+               // if we did split, push the child leafs to the Vector so we can loop into them next
+               leafList.push(l.leftChild);
+               leafList.push(l.rightChild);
+               did_split = true;
+              }
+            }
+        }
+      })
+    }
+    rootLeaf.createRooms();
+    // console.log(leafList);
+    this.state = {leafList:leafList,row:row,col:col,board:board,isPause:0,isClear:0,gen:gen,speed:300}
 
   };
 
@@ -164,9 +443,29 @@ class Roguelike extends React.Component{
   };
 
   componentDidMount = function(){
-
+    // just for fun:
+    // 1
+    // 2 3
+    // 4 5 6
+    // 7 8 9 10
+    // 11 12 13 14 15
+    // function numberGame(n){ 
+    //   if(n==1) {return 1} else { 
+    //     let sum = (1+n)*n/2.0 ;
+    //     let nstr= "";
+    //     for(let i=sum-n+1;i<=sum;i++){
+    //       nstr = nstr + (i + " ")  
+    //     };
+    //     return numberGame(n-1) + "\n" + nstr;
+    //   }
+    // }
+    // console.log(numberGame(5))
   };
   componentWillUnmount = function(){
+
+  };
+
+  drawMap = function(){
 
   };
 
@@ -175,6 +474,7 @@ class Roguelike extends React.Component{
     let col=this.state.col;
     let row=this.state.row;
     let board=this.state.board;
+    let leafList = this.state.leafList;
     let id="";
     let stage="";
     for(let i=0;i<row;i++){
@@ -185,6 +485,14 @@ class Roguelike extends React.Component{
       rowList.push(<Ge row={i} col={j} stage={stage} handleChange={this.handleChange.bind(this)} />);
       };
       geList.push(<tr><td>{rowList}</td></tr>);
+    };
+    const drawMap = function(leafList){
+      leafList.forEach(function(l,index){
+        if(l.room != 0){
+          return <p></p>
+        }
+      })
+
     };
     return (
       <div id={s.mainContainer}>
@@ -197,11 +505,7 @@ class Roguelike extends React.Component{
           <span className={s.playerstate}>Dungeon: 0</span>
         </div>
         <div id={s.gameboard}>
-          <table> 
-            <tbody>
-              {geList}
-            </tbody>
-          </table>
+          <p></p>
         </div>
         <div id={s.mubu1}>
         
