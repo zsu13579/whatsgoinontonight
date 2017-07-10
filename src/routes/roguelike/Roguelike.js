@@ -5,8 +5,6 @@ import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import s from './Roguelike.css';
 import { connect } from 'react-redux';
 import { setRuntimeVariable } from '../../actions/runtime';
-// import canvas from 'canvas';
-// import {Layer, Rect, Stage, Group} from 'react-konva';
 
 class Btn extends React.Component{
 
@@ -138,11 +136,10 @@ class Roguelike extends React.Component{
       };
     };
 
-    // 1 represent 10px;
     let Leaf = {
-      createNew: function(x=1, y=5, width=60, height=60){
+      createNew: function(x=10, y=10, width=1000, height=500){
         let leaf = {};
-        const MIN_LEAF_SIZE = 6 ;
+        const MIN_LEAF_SIZE = 120 ;
         leaf.x = x;
         leaf.y = y;
         leaf.width = width;
@@ -166,12 +163,12 @@ class Roguelike extends React.Component{
           }else if (leaf.height > leaf.width && leaf.height / leaf.width >= 1.25){
             splitH = true;
           }
-          let max = (splitH ? leaf.height: leaf.width) - MIN_LEAF_SIZE ; // determine the maximum height or width
-          if (max <= MIN_LEAF_SIZE)
+          let max = (splitH ? leaf.height: leaf.width) - MIN_LEAF_SIZE; // determine the maximum height or width
+          if (max <= MIN_LEAF_SIZE ) 
           {  
             return false; // the area is too small to split any more...
           };
-          let split = Math.floor(Math.random() * (max - MIN_LEAF_SIZE)) + MIN_LEAF_SIZE;
+          let split = Math.floor(Math.random() * (max - MIN_LEAF_SIZE) / 10 ) * 10 + MIN_LEAF_SIZE;
           // create our left and right children based on the direction of the split
           if (splitH)
           {
@@ -188,126 +185,129 @@ class Roguelike extends React.Component{
         leaf.createHall = function(lRoom, rRoom){
           // connect two rooms together with hallways
           let halls = [];
+          // get random point between 2 rooms
+          // point[0]: x, point[1]: y
           let point1 = [];
           let point2 = [];
-          point1[0] = Math.floor(Math.random() * (lRoom.width -2)) + 1;
-          point1[1] = Math.floor(Math.random() * (lRoom.height -2)) + 1;
-          point2[0] = Math.floor(Math.random() * (rRoom.width -2)) + 1;
-          point2[1] = Math.floor(Math.random() * (rRoom.height -2)) + 1;
+          point1[0] = lRoom.x + Math.floor(Math.random() * (lRoom.width -30)/10)*10 + 10;
+          point1[1] = lRoom.y + Math.floor(Math.random() * (lRoom.height -30)/10)*10 + 10;
+          point2[0] = rRoom.x + Math.floor(Math.random() * (rRoom.width -30)/10)*10 + 10;
+          point2[1] = rRoom.y + Math.floor(Math.random() * (rRoom.height -30)/10)*10 + 10;
           let w = point1[0] - point2[0];
           let h = point1[1] - point2[1];
           let hall1 = {};
           let hall2 = {};
           if(w < 0){
             if( h < 0){
-              //   2
-              // 1
+              // 1  
+              //    2
               if(Math.random() < 0.5){
                 hall1.x = point1[0];
                 hall1.y = point1[1];
                 hall1.height = Math.abs(h);
-                hall1.width = 1;
+                hall1.width = 10;
                 hall2.x = point1[0];
                 hall2.y = point2[1];
-                hall2.height = 1;
+                hall2.height = 10;
                 hall2.width = Math.abs(w);
                 halls.push(hall1);
                 halls.push(hall2);
               }else{
                 hall1.x = point1[0];
                 hall1.y = point1[1];
-                hall1.height = 1;
+                hall1.height = 10;
                 hall1.width = Math.abs(w);
                 hall2.x = point2[0];
-                hall2.y = point1[1];
+                hall2.y = point2[1];
                 hall2.height = Math.abs(h);
-                hall2.width = 1;
+                hall2.width = 10;
                 halls.push(hall1);
                 halls.push(hall2);
               }
             }else if(h > 0){
-              // 1
               //    2
+              // 1   
               if(Math.random() < 0.5){
                 hall1.x = point1[0];
                 hall1.y = point2[1];
                 hall1.height = Math.abs(h);
-                hall1.width = 1;
+                hall1.width = 10;
                 hall2.x = point1[0];
                 hall2.y = point2[1];
-                hall2.height = 1;
+                hall2.height = 10;
                 hall2.width = Math.abs(w);
                 halls.push(hall1);
                 halls.push(hall2);
               }else{
                 hall1.x = point1[0];
                 hall1.y = point1[1];
-                hall1.height = 1;
+                hall1.height = 10;
                 hall1.width = Math.abs(w);
                 hall2.x = point2[0];
                 hall2.y = point2[1];
                 hall2.height = Math.abs(h);
-                hall2.width = 1;
+                hall2.width = 10;
                 halls.push(hall1);
                 halls.push(hall2);
               }
             }else{ // h == 0
+              // 1  2
               hall1.x = point1[0];
               hall1.y = point1[1];
-              hall1.height = 1;
+              hall1.height = 10;
               hall1.width = Math.abs(w);
               halls.push(hall1);
             }
           }else if( w > 0){
             if( h < 0){
-              // 2
               //    1
+              // 2   
               if(Math.random() < 0.5){
                 hall1.x = point2[0];
                 hall1.y = point1[1];
                 hall1.height = Math.abs(h);
-                hall1.width = 1;
+                hall1.width = 10;
                 hall2.x = point2[0];
                 hall2.y = point1[1];
-                hall2.height = 1;
+                hall2.height = 10;
                 hall2.width = Math.abs(w);
                 halls.push(hall1);
                 halls.push(hall2);
               }else{
                 hall1.x = point2[0];
                 hall1.y = point2[1];
-                hall1.height = 1;
-                hall1.width = Math.abs(w);
+                hall1.height = 10;
+                hall1.width = Math.abs(w) + 10;
                 hall2.x = point1[0];
                 hall2.y = point1[1];
                 hall2.height = Math.abs(h);
-                hall2.width = 1;
+                hall2.width = 10;
                 halls.push(hall1);
                 halls.push(hall2);
               }
             }else if(h > 0){
-              //   1
-              // 2
+              // 2  
+              //    1
               if(Math.random() < 0.5){
                 hall1.x = point2[0];
                 hall1.y = point2[1];
                 hall1.height = Math.abs(h);
-                hall1.width = 1;
+                hall1.width = 10;
                 hall2.x = point2[0];
                 hall2.y = point1[1];
-                hall2.height = 1;
+                hall2.height = 10;
                 hall2.width = Math.abs(w);
                 halls.push(hall1);
                 halls.push(hall2);
               }else{
                 hall1.x = point2[0];
                 hall1.y = point2[1];
-                hall1.height = 1;
+                hall1.height = 10;
                 hall1.width = Math.abs(w);
                 hall2.x = point1[0];
                 hall2.y = point2[1];
                 hall2.height = Math.abs(h);
-                hall2.width = 1;
+                hall2.width = 10;
                 halls.push(hall1);
                 halls.push(hall2);
               }
@@ -315,26 +315,26 @@ class Roguelike extends React.Component{
               // 2 1
               hall1.x = point2[0];
               hall1.y = point2[1];
-              hall1.height = 1;
+              hall1.height = 10;
               hall1.width = Math.abs(w);
               halls.push(hall1);
             }
           }else{ // w == 0
             if(h > 0){
-              // 1
               // 2
+              // 1
               hall1.x = point2[0];
               hall1.y = point2[1];
               hall1.height = Math.abs(h);
-              hall1.width = 1;
+              hall1.width = 10;
               halls.push(hall1);
             }else{
-              // 2
               // 1
+              // 2
               hall1.x = point1[0];
               hall1.y = point1[1];
               hall1.height = Math.abs(h);
-              hall1.width = 1;
+              hall1.width = 10;
               halls.push(hall1);
             }
           }
@@ -361,10 +361,10 @@ class Roguelike extends React.Component{
             let roomSize = [0,0];
             let roomPos = [0,0];
             // the room can be 4x4 tiles to the size of the leaf - 2;
-            roomSize[0] = Math.floor(Math.random() * (leaf.width-2-4)) + 4;
-            roomSize[1] = Math.floor(Math.random() * (leaf.height-2-4)) + 4;
-            roomPos[0] = Math.floor(Math.random() * (leaf.width - roomSize[0] - 1)) + 1;
-            roomPos[1] = Math.floor(Math.random() * (leaf.height - roomSize[1] - 1)) + 1;
+            roomSize[0] = Math.floor(Math.random() * (leaf.width-20-100)/10)*10 + 100;
+            roomSize[1] = Math.floor(Math.random() * (leaf.height-20-100)/10)*10 + 100;
+            roomPos[0] = leaf.x + Math.floor(Math.random() * (leaf.width - roomSize[0] - 10)/10)*10 + 10;
+            roomPos[1] = leaf.y + Math.floor(Math.random() * (leaf.height - roomSize[1] - 10)/10)*10 + 10;
             leaf.room = {
               x: roomPos[0],
               y: roomPos[1],
@@ -409,7 +409,7 @@ class Roguelike extends React.Component{
     leaf1.split();
     
     // create rooms and halls, save in leafList
-    let MAX_LEAF_SIZE = 20; 
+    let MAX_LEAF_SIZE = 200; 
     let leafList = [];
     let rootLeaf = Leaf.createNew();
     leafList.push(rootLeaf);
@@ -433,6 +433,12 @@ class Roguelike extends React.Component{
       })
     }
     rootLeaf.createRooms();
+
+    // if(rootLeaf.rightChild != 0 && rootLeaf.leftChild != 0){
+    //           let rRoom = rootLeaf.rightChild.getRoom();
+    //           let lRoom = rootLeaf.leftChild.getRoom();
+    //           rootLeaf.createHall(rRoom,lRoom);
+    //         }
     // console.log(leafList);
     this.state = {leafList:leafList,row:row,col:col,board:board,isPause:0,isClear:0,gen:gen,speed:300}
 
@@ -449,16 +455,39 @@ class Roguelike extends React.Component{
 	let test1 = this.state.leafList[0].halls[0];
 	
 	this.state.leafList.forEach(function(l,indexs){
+    // create rooms
 		if( l.room !=0 ){
 		  let room = l.room;
 		  ctx.beginPath();
-          ctx.lineWidth="1";
-          ctx.strokeStyle="red";
-          ctx.rect(room.x*10,room.y*10,room.width*10,room.height*10);  
-          ctx.stroke();
-	      ctx.fillStyle="green";
-	      ctx.fill();			
+      ctx.strokeStyle="green";
+      ctx.rect(room.x,room.y,room.width,room.height);  
+      ctx.stroke();
+	    ctx.fillStyle="green";
+	    ctx.fill();			
 		}
+
+    // create halls
+    if( l.halls !=0 ){
+      l.halls.forEach(function(hall,index){
+        ctx.beginPath();
+        ctx.strokeStyle="green";
+        ctx.rect(hall.x,hall.y,hall.width,hall.height);  
+        ctx.stroke();
+        ctx.fillStyle="green";
+        ctx.fill();
+      });           
+    }
+
+    // if( l.room !=0 ){
+    //   ctx.beginPath();
+    //       ctx.lineWidth="1";
+    //       ctx.strokeStyle="red";
+    //       ctx.rect(l.x*1,l.y*1,l.width*1,l.height*1);  
+    //       ctx.stroke();
+    //     ctx.fillStyle="green";
+    //     ctx.fill();     
+    // }
+
 	})
 	
 	// 红色矩形
@@ -550,7 +579,7 @@ class Roguelike extends React.Component{
         <div id={s.me1}>
         
         </div>
-		<canvas id="myCanvas" ref="canvasRef" width="1000" height="400" >
+		<canvas id="myCanvas" ref="canvasRef" width="1000" height="550" >
 			Your browser does not support the HTML5 canvas tag.
 		</canvas>
       </div>
