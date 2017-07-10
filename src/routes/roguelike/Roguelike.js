@@ -5,7 +5,7 @@ import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import s from './Roguelike.css';
 import { connect } from 'react-redux';
 import { setRuntimeVariable } from '../../actions/runtime';
-import canvas from 'canvas';
+// import canvas from 'canvas';
 // import {Layer, Rect, Stage, Group} from 'react-konva';
 
 class Btn extends React.Component{
@@ -443,6 +443,42 @@ class Roguelike extends React.Component{
   };
 
   componentDidMount = function(){
+	let c = this.refs.canvasRef;
+	let ctx=c.getContext("2d");
+	
+	let test1 = this.state.leafList[0].halls[0];
+	
+	this.state.leafList.forEach(function(l,indexs){
+		if( l.room !=0 ){
+		  let room = l.room;
+		  ctx.beginPath();
+          ctx.lineWidth="1";
+          ctx.strokeStyle="red";
+          ctx.rect(room.x*10,room.y*10,room.width*10,room.height*10);  
+          ctx.stroke();
+	      ctx.fillStyle="green";
+	      ctx.fill();			
+		}
+	})
+	
+	// 红色矩形
+    // ctx.beginPath();
+    // ctx.lineWidth="6";
+    // ctx.strokeStyle="red";
+    // ctx.rect(test1.x*10,test1.y*10,test1.width*10,test1.height*10);  
+    // ctx.stroke();
+	// ctx.fillStyle="green";
+	// ctx.fill();
+	
+	// // 蓝色矩形
+	// ctx.beginPath();
+	// ctx.lineWidth="10";
+	// ctx.strokeStyle="blue";
+	// ctx.rect(500,250,150,80);
+	// ctx.stroke();
+	// ctx.fillStyle="pink";
+	// ctx.fill();
+	
     // just for fun:
     // 1
     // 2 3
@@ -462,7 +498,7 @@ class Roguelike extends React.Component{
     // console.log(numberGame(5))
   };
   componentWillUnmount = function(){
-
+	
   };
 
   drawMap = function(){
@@ -504,15 +540,19 @@ class Roguelike extends React.Component{
           <span className={s.playerstate}>Next Level: 60 XP</span>
           <span className={s.playerstate}>Dungeon: 0</span>
         </div>
-        <div id={s.gameboard}>
+        <div id={s.gameboard1}>
           <p></p>
         </div>
+		
         <div id={s.mubu1}>
         
         </div>
-        <div id={s.me}>
+        <div id={s.me1}>
         
         </div>
+		<canvas id="myCanvas" ref="canvasRef" width="1000" height="400" >
+			Your browser does not support the HTML5 canvas tag.
+		</canvas>
       </div>
     )
   }
