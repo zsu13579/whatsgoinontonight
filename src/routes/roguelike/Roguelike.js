@@ -359,6 +359,7 @@ class Roguelike extends React.Component{
       })
     }
     rootLeaf.createRooms();
+    // let actors = this.initActors();
 
     this.state = {leafList:leafList,row:row,col:col,board:board,isPause:0,isClear:0,gen:gen,speed:300}
 
@@ -370,30 +371,95 @@ class Roguelike extends React.Component{
 
   handleKeyUp = function(event){
     event.preventDefault();
+    let c = this.refs.canvasRef;
+    let ctx=c.getContext("2d");
+    let actors = this.state.actors;
     // keyCode: 38: up,39:right, 40:down, 37:left
-    console.log(event.keyCode);
+    switch(event.keyCode){
+      case 37:     
+      actors[0].x = actors[0].x - 10;
+      // this.setState({actors:actors});
+      this.drawMap();
+      this.drawActors(actors,ctx);
+      break;
+      case 38:
+      actors[0].y = actors[0].y - 10;
+      // this.setState({actors:actors});
+      this.drawMap();
+      this.drawActors(actors,ctx);
+      break;
+      case 39:
+      actors[0].x = actors[0].x + 10;
+      // this.setState({actors:actors});
+      this.drawMap();
+      this.drawActors(actors,ctx);
+      break;
+      case 40:
+      actors[0].y = actors[0].y + 10;
+      // this.setState({actors:actors});
+      this.drawMap();
+      this.drawActors(actors,ctx);
+      break;
+    }
+  }
+  
+  initActors = function(){
+    let actors = [];
+    this.state.leafList.forEach(function(l,index){
+    // init actors or player
+    if(actors.length > 6){
+      return actors;
+    }else{
+    
+    if( l.room !=0 && Math.random()<0.5 ){
+      let room = l.room;
+      let actor = {};
+      actor.x = room.x + Math.floor(Math.random() * (room.width - 20)/10 ) * 10 + 10;
+      actor.y = room.y + Math.floor(Math.random() * (room.height - 20)/10 ) * 10 + 10;
+      actors.push(actor); 
+    }
+    }
+    })
+    return actors;
   }
 
-  componentWillMount = function(){
-
+  drawActors = function(actors){
+    let c = this.refs.canvasRef;
+    let ctx=c.getContext("2d");
+    actors.forEach(function(actor,index){    
+    if( index == 0 ){
+      ctx.beginPath();
+      ctx.strokeStyle="blue";
+      ctx.rect(actor.x,actor.y,10,10);  
+      ctx.stroke();
+      ctx.fillStyle="blue";
+      ctx.fill();     
+    }else{
+      ctx.beginPath();
+      ctx.strokeStyle="red";
+      ctx.rect(actor.x,actor.y,10,10);  
+      ctx.stroke();
+      ctx.fillStyle="red";
+      ctx.fill();     
+    }
+    })
   }
 
-  componentDidMount = function(){
-  document.addEventListener("keyup", this.handleKeyUp.bind(this));      
-	let c = this.refs.canvasRef;
-	let ctx=c.getContext("2d");
-	
-	this.state.leafList.forEach(function(l,indexs){
+  drawMap = function(){
+    let c = this.refs.canvasRef;
+    let ctx=c.getContext("2d");
+  
+    this.state.leafList.forEach(function(l,index){
     // draw rooms
-		if( l.room !=0 ){
-		  let room = l.room;
-		  ctx.beginPath();
+    if( l.room !=0 ){
+      let room = l.room;
+      ctx.beginPath();
       ctx.strokeStyle="green";
       ctx.rect(room.x,room.y,room.width,room.height);  
       ctx.stroke();
-	    ctx.fillStyle="green";
-	    ctx.fill();			
-		}
+      ctx.fillStyle="green";
+      ctx.fill();     
+    }
 
     // draw halls
     if( l.halls !=0 ){
@@ -406,11 +472,21 @@ class Roguelike extends React.Component{
         ctx.fill();
       });           
     }
+    })
+  }
 
-    // act on player input
-    // onKeyup
+  componentWillMount = function(){
+    let actors = this.initActors();
+    this.setState({actors:actors})
+  }
 
-	})
+  componentDidMount = function(){
+    document.addEventListener("keyup", this.handleKeyUp.bind(this));      
+    // draw map
+    this.drawMap();
+    // init and draw actors
+    // let actors = this.initActors();
+    this.drawActors(this.state.actors);
 	
     // just for fun:
     // 1
@@ -431,11 +507,7 @@ class Roguelike extends React.Component{
     // console.log(numberGame(5))
   };
   componentWillUnmount = function(){
-	  document.removeEventListener("keyup", this.onKeyup.bind(this));
-  };
-
-  drawMap = function(){
-
+	  document.removeEventListener("keyup", this.handleKeyUp.bind(this));
   };
 
   render(){
@@ -464,7 +536,7 @@ class Roguelike extends React.Component{
 
     };
     return (
-      <div id={s.mainContainer} onKeyup = {this.onKeyup} >
+      <div id={s.mainContainer}>
         <div>
           <span className={s.playerstate}>Health: 100</span>
           <span className={s.playerstate}>Weapon: stick</span>
