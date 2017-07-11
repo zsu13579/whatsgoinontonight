@@ -359,9 +359,10 @@ class Roguelike extends React.Component{
       })
     }
     rootLeaf.createRooms();
-    // let actors = this.initActors();
+    // actor list and map for easy search
+    let {actors,actorsMap} = this.initActors(leafList);
 
-    this.state = {leafList:leafList,row:row,col:col,board:board,isPause:0,isClear:0,gen:gen,speed:300}
+    this.state = {actors:actors,leafList:leafList,row:row,col:col,board:board,isPause:0,isClear:0,gen:gen,speed:300}
 
   };
 
@@ -403,9 +404,10 @@ class Roguelike extends React.Component{
     }
   }
   
-  initActors = function(){
+  initActors = function(leafList){
     let actors = [];
-    this.state.leafList.forEach(function(l,index){
+    let actorsMap = {};
+    leafList.forEach(function(l,index){
     // init actors or player
     if(actors.length > 6){
       return actors;
@@ -416,11 +418,12 @@ class Roguelike extends React.Component{
       let actor = {};
       actor.x = room.x + Math.floor(Math.random() * (room.width - 20)/10 ) * 10 + 10;
       actor.y = room.y + Math.floor(Math.random() * (room.height - 20)/10 ) * 10 + 10;
-      actors.push(actor); 
+      actors.push(actor);
+      actorsMap[actor.x + "_" + actor.y] = actor; 
     }
     }
     })
-    return actors;
+    return {actors:actors,actorsMap:actorsMap};
   }
 
   drawActors = function(actors){
@@ -474,10 +477,18 @@ class Roguelike extends React.Component{
     }
     })
   }
+  // to see if player can move to the new place
+  canGo = function(actor,dir){
+    let a;
+  }
+  // move to the new place, combat, or eat food or pick weapon .etc
+  moveTo = function(actor,dir){
+    let a;
+  }
 
   componentWillMount = function(){
-    let actors = this.initActors();
-    this.setState({actors:actors})
+    // let actors = this.initActors();
+    // this.setState({actors:actors})
   }
 
   componentDidMount = function(){
