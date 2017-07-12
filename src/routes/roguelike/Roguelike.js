@@ -479,10 +479,41 @@ class Roguelike extends React.Component{
   }
   // to see if player can move to the new place
   canGo = function(actor,dir){
-    let a;
+    let x = dir.x,
+        y = dir.y;
+    this.state.leafList.forEach(function(l,index){
+      if(l.room != 0){
+        let room = l.room;
+        let minX = room.x,
+            maxX = room.x + room.width,
+            minY = room.y,
+            maxY = room.y + room.height;
+
+        if( x < maxX && x >= minX && y < maxY && y >= minY  ){
+          return true;
+        }        
+      }
+      if(l.halls != 0){
+        l.halls.forEach(function(hall){
+          let hminX = hall.x,
+              hmaxX = hall.x + hall.width,
+              hminY = hall.y,
+              hmaxY = hall.y + hall.height;
+
+          if( x < hmaxX && x >= hminX && y < hmaxY && y >= hminY  ){
+           return true;
+          }  
+        })                
+      }
+    })
+    return false;
   }
   // move to the new place, combat, or eat food or pick weapon .etc
   moveTo = function(actor,dir){
+    if(!canGo(actor,dir)){
+      return false;
+    }
+    // combat
     let a;
   }
 
