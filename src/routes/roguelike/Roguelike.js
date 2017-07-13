@@ -375,33 +375,30 @@ class Roguelike extends React.Component{
     let c = this.refs.canvasRef;
     let ctx=c.getContext("2d");
     let actors = this.state.actors;
+    let dir = {};
     // keyCode: 38: up,39:right, 40:down, 37:left
     switch(event.keyCode){
-      case 37:     
-      actors[0].x = actors[0].x - 10;
-      // this.setState({actors:actors});
-      this.drawMap();
-      this.drawActors(actors,ctx);
+      case 37: 
+      dir.x = -10;
+      dir.y = 0;    
       break;
       case 38:
-      actors[0].y = actors[0].y - 10;
-      // this.setState({actors:actors});
-      this.drawMap();
-      this.drawActors(actors,ctx);
+      dir.x = 0;
+      dir.y = -10;    
       break;
       case 39:
-      actors[0].x = actors[0].x + 10;
-      // this.setState({actors:actors});
-      this.drawMap();
-      this.drawActors(actors,ctx);
+      dir.x = 10;
+      dir.y = 0;
       break;
       case 40:
-      actors[0].y = actors[0].y + 10;
-      // this.setState({actors:actors});
-      this.drawMap();
-      this.drawActors(actors,ctx);
+      dir.x = 0;
+      dir.y = 10;
       break;
     }
+    actors[0] = this.moveTo(actors[0],dir);
+    // this.setState({actors:actors});
+    this.drawMap();
+    this.drawActors(actors,ctx);
   }
   
   initActors = function(leafList){
@@ -479,9 +476,10 @@ class Roguelike extends React.Component{
   }
   // to see if player can move to the new place
   canGo = function(actor,dir){
-    let x = dir.x,
-        y = dir.y;
+    let res = false;
     this.state.leafList.forEach(function(l,index){
+      let x = dir.x + actor.x;
+      let y = dir.y + actor.y;
       if(l.room != 0){
         let room = l.room;
         let minX = room.x,
@@ -490,7 +488,7 @@ class Roguelike extends React.Component{
             maxY = room.y + room.height;
 
         if( x < maxX && x >= minX && y < maxY && y >= minY  ){
-          return true;
+          res = true;
         }        
       }
       if(l.halls != 0){
@@ -501,20 +499,25 @@ class Roguelike extends React.Component{
               hmaxY = hall.y + hall.height;
 
           if( x < hmaxX && x >= hminX && y < hmaxY && y >= hminY  ){
-           return true;
+           res = true;
           }  
         })                
       }
     })
-    return false;
+    return res;
   }
   // move to the new place, combat, or eat food or pick weapon .etc
   moveTo = function(actor,dir){
-    if(!canGo(actor,dir)){
-      return false;
+    if(this.canGo(actor,dir) == false){
+      return actor;
     }
     // combat
-    let a;
+    
+    // nothing there move to new place
+    let newActor = actor;
+    newActor.x = actor.x + dir.x;
+    newActor.y = actor.y + dir.y;
+    return newActor;
   }
 
   componentWillMount = function(){
