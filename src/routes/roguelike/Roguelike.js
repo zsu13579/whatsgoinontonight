@@ -362,7 +362,7 @@ class Roguelike extends React.Component{
     // actor list and map for easy search
     let {actors,actorsMap} = this.initActors(leafList);
 
-    this.state = {actors:actors,leafList:leafList,row:row,col:col,board:board,isPause:0,isClear:0,gen:gen,speed:300}
+    this.state = {actors:actors,actorsMap:actorsMap,leafList:leafList,row:row,col:col,board:board,isPause:0,isClear:0,gen:gen,speed:300}
 
   };
 
@@ -374,7 +374,7 @@ class Roguelike extends React.Component{
     event.preventDefault();
     let c = this.refs.canvasRef;
     let ctx=c.getContext("2d");
-    let actors = this.state.actors;
+    let {actors,actorsMap} = this.state;
     let dir = {};
     // keyCode: 38: up,39:right, 40:down, 37:left
     switch(event.keyCode){
@@ -395,7 +395,7 @@ class Roguelike extends React.Component{
       dir.y = 10;
       break;
     }
-    actors[0] = this.moveTo(actors[0],dir);
+    actors = this.moveTo(actors,actorsMap,dir);
     // this.setState({actors:actors});
     this.drawMap();
     this.drawActors(actors,ctx);
@@ -507,17 +507,28 @@ class Roguelike extends React.Component{
     return res;
   }
   // move to the new place, combat, or eat food or pick weapon .etc
-  moveTo = function(actor,dir){
-    if(this.canGo(actor,dir) == false){
-      return actor;
+  moveTo = function(actors,actorsMap,dir){
+    if(this.canGo(actors[0],dir) == false){
+      return actors;
     }
+    let newActor = actors[0];
+    newActor.x = actors[0].x + dir.x;
+    newActor.y = actors[0].y + dir.y;
+    actors[0] = newActor;
     // combat
+    if(actorsMap[newActor.x+'_'+newActor.y]){
+
+      let enemy = actorsMap[newActor.x+'_'+newActor.y] ;
+      let idx = actors.indexOf(enemy);
+      if( idx != 0 ){
+        actors[actors.indexOf(enemy)]={};
+      }
+      
+
+    }
     
     // nothing there move to new place
-    let newActor = actor;
-    newActor.x = actor.x + dir.x;
-    newActor.y = actor.y + dir.y;
-    return newActor;
+    return actors;
   }
 
   componentWillMount = function(){
