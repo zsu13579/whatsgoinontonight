@@ -5,6 +5,7 @@ import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import s from './Roguelike.css';
 import { connect } from 'react-redux';
 import { setRuntimeVariable } from '../../actions/runtime';
+import { Button,Alert,Modal } from 'react-bootstrap';
 
 class Btn extends React.Component{
 
@@ -361,8 +362,10 @@ class Roguelike extends React.Component{
     rootLeaf.createRooms();
     // actor list and map for easy search
     let {actors,actorsMap} = this.initActors(leafList);
+    let {food,foodMap} = this.initFood(leafList,actorsMap);
+    let {weapon,weaponMap} = this.initWeapon(leafList,actorsMap,foodMap);
 
-    this.state = {actors:actors,actorsMap:actorsMap,leafList:leafList,row:row,col:col,board:board,isPause:0,isClear:0,gen:gen,speed:300}
+    this.state = {showModal:false,weapon:weapon,weaponMap:weaponMap,food:food,foodMap:foodMap,actors:actors,actorsMap:actorsMap,leafList:leafList,row:row,col:col,board:board,isPause:0,isClear:0,gen:gen,speed:300}
 
   };
 
@@ -374,7 +377,7 @@ class Roguelike extends React.Component{
     event.preventDefault();
     let c = this.refs.canvasRef;
     let ctx=c.getContext("2d");
-    let {actors,actorsMap} = this.state;
+    let {actors,actorsMap,food,foodMap,weapon,weaponMap} = this.state;
     let dir = {};
     // keyCode: 38: up,39:right, 40:down, 37:left
     switch(event.keyCode){
@@ -395,10 +398,12 @@ class Roguelike extends React.Component{
       dir.y = 10;
       break;
     }
-    actors = this.moveTo(actors,actorsMap,dir);
-    // this.setState({actors:actors});
+    actors = this.moveTo(actors,actorsMap,food,foodMap,weapon,weaponMap,dir);
+    this.setState({weapon:weapon,weaponMap:weaponMap,food:food,foodMap:foodMap,actors:actors,actorsMap:actorsMap});
     this.drawMap();
-    this.drawActors(actors,ctx);
+    this.drawActors(actors);
+    this.drawFood(food);
+    this.drawWeapon(weapon);
   }
   
   initActors = function(leafList){
@@ -410,22 +415,42 @@ class Roguelike extends React.Component{
       return actors;
     }else{
     
-    if( l.room !=0 && Math.random()<0.5 ){
+    if( l.room !=0 && Math.random() < 0.5 ){
       let room = l.room;
       let actor = {};
       actor.x = room.x + Math.floor(Math.random() * (room.width - 20)/10 ) * 10 + 10;
       actor.y = room.y + Math.floor(Math.random() * (room.height - 20)/10 ) * 10 + 10;
+      if(actors.length == 0){
+        // first actor is player
+        actor.hp = 120;
+        actor.attack = 10;
+        actor.level = 0;
+        actor.xp = 0;
+        actor.weaponName = "fist";
+      }else{
+        actor.hp = Math.floor( Math.random() * 3 ) * 10 + 10;        
+        actor.level = Math.floor( Math.random() * 3 );
+        actor.attack = Math.floor( Math.random() * actor.level ) * 10 + 10;
+        actor.xp = Math.floor( Math.random() * actor.level ) * 10 + actor.attack;
+      }
+
       actors.push(actor);
       actorsMap[actor.x + "_" + actor.y] = actor; 
     }
     }
     })
+    // last one of actors is boss
+    actors[actors.length-1].hp = 100;
+    actors[actors.length-1].level = 4;
+    actors[actors.length-1].attack = 50;
+    actors[actors.length-1].xp = 200;
     return {actors:actors,actorsMap:actorsMap};
   }
 
   drawActors = function(actors){
     let c = this.refs.canvasRef;
     let ctx=c.getContext("2d");
+    let lastInx = actors.length-1;
     actors.forEach(function(actor,index){    
     if( index == 0 ){
       ctx.beginPath();
@@ -434,14 +459,101 @@ class Roguelike extends React.Component{
       ctx.stroke();
       ctx.fillStyle="blue";
       ctx.fill();     
+    }else if( index == lastInx ){
+      ctx.beginPath();
+      ctx.strokeStyle="purple";
+      ctx.rect(actor.x,actor.y,10,10);  
+      ctx.stroke();
+      ctx.fillStyle="purple";
+      ctx.fill();     
     }else{
       ctx.beginPath();
       ctx.strokeStyle="red";
       ctx.rect(actor.x,actor.y,10,10);  
       ctx.stroke();
       ctx.fillStyle="red";
-      ctx.fill();     
+      ctx.fill();
     }
+    })
+  }
+
+  initFood = function(leafList,actorsMap){
+    let food = [];
+    let foodMap = {};
+    leafList.forEach(function(l,index){
+    // init actors or player
+    if(food.length > 4){
+      return food;
+    }else{
+    
+    if( l.room !=0 && Math.random()<0.5 ){
+      let room = l.room;
+      let f = {};
+      f.x = room.x + Math.floor(Math.random() * (room.width - 20)/10 ) * 10 + 10;
+      f.y = room.y + Math.floor(Math.random() * (room.height - 20)/10 ) * 10 + 10;
+      f.hp = Math.floor( Math.random() * 3 ) * 10 + 10;
+      
+      if(!actorsMap[f.x + "_" + f.y]){
+       food.push(f);
+       foodMap[f.x + "_" + f.y] = f; 
+      }
+    }
+    }
+    })
+    return {food:food,foodMap:foodMap};
+  }
+
+  drawFood = function(food){
+    let c = this.refs.canvasRef;
+    let ctx=c.getContext("2d");
+    food.forEach(function(f,index){    
+      ctx.beginPath();
+      ctx.strokeStyle="orange";
+      ctx.rect(f.x,f.y,10,10);  
+      ctx.stroke();
+      ctx.fillStyle="orange";
+      ctx.fill();     
+    })
+  }
+
+  initWeapon = function(leafList,actorsMap,foodMap){
+    let weapon = [];
+    let weaponMap = {};
+    let typeList = ["stick", "sword", "gun"];
+    leafList.forEach(function(l,index){
+    // init actors or player
+    if(weapon.length > 2){
+      return weapon;
+    }else{
+    
+    if( l.room !=0 && Math.random()<0.5 ){
+      let room = l.room;
+      let w = {};
+      w.x = room.x + Math.floor(Math.random() * (room.width - 20)/10 ) * 10 + 10;
+      w.y = room.y + Math.floor(Math.random() * (room.height - 20)/10 ) * 10 + 10;
+      w.attack = (weapon.length + 1) * 10;
+      w.name = typeList[weapon.length];
+      
+      if(!actorsMap[w.x + "_" + w.y] && !foodMap[w.x + "_" + w.y]){
+       weapon.push(w);
+       weaponMap[w.x + "_" + w.y] = w; 
+      }
+    }
+    }
+    })
+    return {weapon:weapon,weaponMap:weaponMap};
+  }
+
+  drawWeapon = function(weapon){
+    let c = this.refs.canvasRef;
+    let ctx=c.getContext("2d");
+    weapon.forEach(function(w,index){    
+      ctx.beginPath();
+      ctx.strokeStyle="pink";
+      ctx.rect(w.x,w.y,10,10);  
+      ctx.stroke();
+      ctx.fillStyle="pink";
+      ctx.fill();     
     })
   }
 
@@ -506,27 +618,86 @@ class Roguelike extends React.Component{
     })
     return res;
   }
+  // get level
+  getLevel = function(xp){
+    if(xp>=60){
+      return 1;
+    }else if(xp>=120){
+      return 2;
+    }else if(xp>=180){
+      return 3;
+    }else if(xp>=240){
+      return 4;
+    }else{
+      return 0;
+    }
+  }
   // move to the new place, combat, or eat food or pick weapon .etc
-  moveTo = function(actors,actorsMap,dir){
+  moveTo = function(actors,actorsMap,food,foodMap,weapon,weaponMap,dir){
     if(this.canGo(actors[0],dir) == false){
       return actors;
     }
+    // newActor change and actors[0] change!!
     let newActor = actors[0];
-    newActor.x = actors[0].x + dir.x;
-    newActor.y = actors[0].y + dir.y;
-    actors[0] = newActor;
+    //save origin place
+    let x = actors[0].x;
+    let y = actors[0].y;
+    newActor.x = newActor.x + dir.x;
+    newActor.y = newActor.y + dir.y;
+
     // combat
     if(actorsMap[newActor.x+'_'+newActor.y]){
 
       let enemy = actorsMap[newActor.x+'_'+newActor.y] ;
+      if( enemy.x ){ // enemy is not defeated, ie. not {}
       let idx = actors.indexOf(enemy);
-      if( idx != 0 ){
-        actors[actors.indexOf(enemy)]={};
+      enemy.hp = enemy.hp - newActor.attack;
+      newActor.hp = newActor.hp - enemy.attack;
+      if( newActor.hp < 0 ){
+        this.setState({showModal:true,finalResult:"You Lost!"});
+      }else if( enemy.hp < 0 ){
+        if( idx != 0 ){
+         newActor.xp = enemy.xp;
+         let orginLevel = newActor.level;
+         newActor.level = this.getLevel(newActor.xp);
+         newActor.attack = newActor.attack + (newActor.level - orginLevel) * 10;
+         actors[actors.indexOf(enemy)]={};
+         actorsMap[enemy.x+'_'+enemy.y]={};
+        }
+        if( idx == actors.length - 1 ){
+          this.setState({showModal:true,finalResult:"You Win!"});
+        }
+      }else{
+        actors[0].x = x;
+        actors[0].y = y;
       }
-      
-
+     }// if enemy.x
     }
-    
+
+    // eat food
+    else if(foodMap[newActor.x+'_'+newActor.y]){
+
+      let f = foodMap[newActor.x+'_'+newActor.y] ;
+      if( f.x ){ // f is not eaten, ie. not {}
+       newActor.hp = newActor.hp + f.hp;
+       food[food.indexOf(f)]={};
+       foodMap[f.x+'_'+f.y]={};
+      }
+    }
+    // pick weapon
+    else if(weaponMap[newActor.x+'_'+newActor.y]){
+      let w = weaponMap[newActor.x+'_'+newActor.y] ;
+      if( w.x ){ // w is not picked, ie. not {}
+       let typeList = ["stick", "sword", "gun"];
+       if( typeList.indexOf(w.name) > typeList.indexOf(newActor.weaponName) ){  // if weapon level higher than player's
+        newActor.attack = newActor.attack + w.attack;
+        newActor.weaponName = w.name;
+       }
+       weapon[weapon.indexOf(w)]={};
+       weaponMap[w.x+'_'+w.y]={};
+      }
+    }
+
     // nothing there move to new place
     return actors;
   }
@@ -543,6 +714,8 @@ class Roguelike extends React.Component{
     // init and draw actors
     // let actors = this.initActors();
     this.drawActors(this.state.actors);
+    this.drawFood(this.state.food);
+    this.drawWeapon(this.state.weapon);
 	
     // just for fun:
     // 1
@@ -583,23 +756,16 @@ class Roguelike extends React.Component{
       };
       geList.push(<tr><td>{rowList}</td></tr>);
     };
-    const drawMap = function(leafList){
-      leafList.forEach(function(l,index){
-        if(l.room != 0){
-          return <p></p>
-        }
-      })
-
-    };
+    const close = () => this.setState({ showModal: false});
     return (
       <div id={s.mainContainer}>
         <div>
-          <span className={s.playerstate}>Health: 100</span>
-          <span className={s.playerstate}>Weapon: stick</span>
-          <span className={s.playerstate}>Attack: 7</span>
-          <span className={s.playerstate}>Level: 0</span>
+          <span className={s.playerstate}>Health: {this.state.actors[0].hp}</span>
+          <span className={s.playerstate}>Weapon: {this.state.actors[0].weaponName}</span>
+          <span className={s.playerstate}>Attack: {this.state.actors[0].attack}</span>
+          <span className={s.playerstate}>Level: {this.state.actors[0].level}</span>
           <span className={s.playerstate}>Next Level: 60 XP</span>
-          <span className={s.playerstate}>Dungeon: 0</span>
+          <span className={s.playerstate}>Dungeon: {this.state.actors.length - 1}</span>
         </div>
         <div id={s.gameboard1}>
           <p></p>
@@ -611,9 +777,22 @@ class Roguelike extends React.Component{
         <div id={s.me1}>
         
         </div>
-		<canvas id="myCanvas" ref="canvasRef" width="1000" height="550" >
-			Your browser does not support the HTML5 canvas tag.
-		</canvas>
+		    <canvas id="myCanvas" ref="canvasRef" width="1000" height="550" >
+			    Your browser does not support the HTML5 canvas tag.
+		    </canvas>
+        <Modal
+            show={this.state.showModal}
+            onHide={close}
+            aria-labelledby="contained-modal-title"
+          >
+            <Modal.Body>
+              {this.state.finalResult}
+            </Modal.Body>
+            <Modal.Footer>
+              <Button onClick={close}>Close</Button>
+            </Modal.Footer>
+
+        </Modal>
       </div>
     )
   }
